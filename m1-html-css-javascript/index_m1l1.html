@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ejemplos de HTML y CSS</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; --paper: #ffffff; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0; }
+    .index li { padding: 5px 0; font-size: 14px; }
+    .index a { color: var(--ink); }
+    main { min-width: 0; }
+    section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    iframe { display: block; width: 100%; height: 160px; border: 1px solid var(--line); background: var(--paper); }
+    .tall { height: 330px; }
+    .case { height: 550px; }
+    table { border-collapse: collapse; width: 100%; background: var(--paper); }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; } .case { height: 680px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; } section { break-inside: avoid; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Ejemplos de HTML y CSS</h1>
+    <p>Lectura 1 &middot; Fundamentos de la web &middot; Caso Empresa Ficticia</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#elementos">Elementos y atributos</a></li>
+        <li><a href="#estructura">Documento HTML b&aacute;sico</a></li>
+        <li><a href="#cabecera">Elementos de la cabecera</a></li>
+        <li><a href="#cuerpo">Elementos del cuerpo</a></li>
+        <li><a href="#formato">Formato y espacios</a></li>
+        <li><a href="#comentarios">Comentarios</a></li>
+        <li><a href="#entidades">Caracteres especiales</a></li>
+        <li><a href="#semantica">Estructura sem&aacute;ntica HTML5</a></li>
+        <li><a href="#impulso">Empresa Ficticia: HTML</a></li>
+        <li><a href="#css">Empresa Ficticia: CSS</a></li>
+      </ol>
+      <p><a href="index_m1l2.html">Lectura 2</a> &middot; <a href="index_m1l3.html">Lectura 3</a> &middot; <a href="index_m1l4.html">Lectura 4</a></p>
+    </nav>
+    <main id="contenido">
+      <section id="elementos">
+        <h2><span class="number">01</span>Elementos y atributos</h2>
+        <p>Un p&aacute;rrafo tiene una etiqueta de apertura y otra de cierre. <code>br</code> produce un salto de l&iacute;nea; <code>lang="es"</code> indica el idioma del documento.</p>
+        <pre><code>&lt;html lang="es"&gt;
+  &lt;body&gt;
+    &lt;p&gt;Universidad Siglo 21&lt;br&gt;Mi primer documento HTML&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </section>
+      <section id="estructura">
+        <h2><span class="number">02</span>Documento HTML b&aacute;sico</h2>
+        <pre><code id="code-basic">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Mi primer documento HTML&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;Universidad Siglo 21&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="Resultado del documento HTML b&aacute;sico" data-code="code-basic" sandbox></iframe>
+      </section>
+      <section id="cabecera">
+        <h2><span class="number">03</span>Elementos de la cabecera</h2>
+        <pre><code>&lt;title&gt;Mi primer documento HTML&lt;/title&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+&lt;link rel="stylesheet" type="text/css" href="estilo.css"&gt;</code></pre>
+        <p>El t&iacute;tulo aparece en la pesta&ntilde;a del navegador. Los metadatos configuran la codificaci&oacute;n y la ventana gr&aacute;fica. <code>link</code> vincula la hoja CSS externa.</p>
+      </section>
+      <section id="cuerpo">
+        <h2><span class="number">04</span>Elementos del cuerpo</h2>
+        <pre><code id="code-body">&lt;h1&gt;Empresa Ficticia&lt;/h1&gt;
+&lt;h2&gt;Servicios&lt;/h2&gt;
+      &lt;h3&gt;Marketing digital&lt;/h3&gt;
+      &lt;h4&gt;Redes sociales&lt;/h4&gt;
+      &lt;h5&gt;Planificaci&oacute;n de contenidos&lt;/h5&gt;
+      &lt;h6&gt;Calendario mensual&lt;/h6&gt;
+&lt;p&gt;&lt;strong&gt;Marketing digital&lt;/strong&gt; con un enfoque &lt;em&gt;personalizado&lt;/em&gt;.
+  &lt;br&gt;Creamos &lt;span class="texto-en-linea"&gt;estrategias efectivas&lt;/span&gt;.
+&lt;/p&gt;
+&lt;nav aria-label="Servicios"&gt;
+  &lt;a href="https://www.empresaficticia.com.ar"&gt;Visita nuestro sitio web&lt;/a&gt;
+&lt;/nav&gt;
+&lt;ul&gt;
+  &lt;li&gt;Gesti&oacute;n de redes sociales&lt;/li&gt;
+  &lt;li&gt;SEO&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+  &lt;li&gt;Definir objetivos&lt;/li&gt;
+  &lt;li&gt;Dise&ntilde;ar la estrategia&lt;/li&gt;
+&lt;/ol&gt;
+&lt;img src="imagen.jpg" alt="Equipo de Empresa Ficticia trabajando"&gt;
+&lt;audio controls src="audio.mp3"&gt;Tu navegador no admite audio.&lt;/audio&gt;
+&lt;video controls width="320" src="video.mp4"&gt;Tu navegador no admite video.&lt;/video&gt;
+&lt;canvas width="320" height="150"&gt;Contenido alternativo del lienzo.&lt;/canvas&gt;
+&lt;form&gt;
+  &lt;label for="nombre"&gt;Nombre&lt;/label&gt;
+  &lt;input id="nombre" name="nombre" type="text" required&gt;
+  &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="tall" title="Resultado de etiquetas del cuerpo y formulario" data-code="code-body" sandbox></iframe>
+      </section>
+      <section id="formato">
+        <h2><span class="number">05</span>Formato y espacios en blanco</h2>
+        <h3>Sin formato</h3>
+        <pre><code>&lt;div&gt;&lt;p&gt;Este es un p&aacute;rrafo. &lt;/p&gt;&lt;p&gt;Este es otro p&aacute;rrafo. &lt;/p&gt;&lt;/div&gt;</code></pre>
+        <h3>Con formato</h3>
+        <pre><code id="code-format">&lt;div&gt;
+  &lt;p&gt;Este es un p&aacute;rrafo. &lt;/p&gt;
+  &lt;p&gt;Este es otro p&aacute;rrafo. &lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        <h3>Resultado de ambas versiones</h3>
+        <iframe title="Resultado de los p&aacute;rrafos con formato" data-code="code-format" sandbox></iframe>
+      </section>
+      <section id="comentarios">
+        <h2><span class="number">06</span>Comentarios HTML</h2>
+        <pre><code>&lt;!-- Este es un comentario que no ser&aacute; visible en la p&aacute;gina --&gt;
+&lt;!-- Este es un comentario de m&uacute;ltiples l&iacute;neas --&gt;</code></pre>
+        <p>Los comentarios est&aacute;n en el c&oacute;digo fuente, pero no producen contenido visible.</p>
+      </section>
+      <section id="entidades">
+        <h2><span class="number">07</span>Caracteres especiales</h2>
+        <table>
+          <thead><tr><th scope="col">Car&aacute;cter</th><th scope="col">Entidad HTML</th></tr></thead>
+          <tbody>
+            <tr><td>&lt;</td><td><code>&amp;lt;</code></td></tr>
+            <tr><td>&gt;</td><td><code>&amp;gt;</code></td></tr>
+            <tr><td>&amp;</td><td><code>&amp;amp;</code></td></tr>
+            <tr><td>&quot;</td><td><code>&amp;quot;</code></td></tr>
+            <tr><td>&apos;</td><td><code>&amp;apos;</code></td></tr>
+          </tbody>
+        </table>
+        <h3>Ejemplo de aplicaci&oacute;n</h3>
+        <pre><code id="code-entities">&lt;p&gt;&amp;lt;p&amp;gt;Texto&amp;lt;/p&amp;gt; &amp;amp; &amp;quot;HTML&amp;quot; &amp;apos;CSS&amp;apos;&lt;/p&gt;</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="Resultado de las entidades HTML" data-code="code-entities" sandbox></iframe>
+      </section>
+      <section id="semantica">
+        <h2><span class="number">08</span>Estructura sem&aacute;ntica HTML5</h2>
+        <pre><code id="code-semantic">&lt;header&gt;
+  &lt;h1&gt;Empresa Ficticia&lt;/h1&gt;
+  &lt;nav aria-label="Principal"&gt;&lt;a href="#servicios"&gt;Servicios&lt;/a&gt;&lt;/nav&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;section id="servicios"&gt;
+    &lt;h2&gt;Servicios&lt;/h2&gt;
+    &lt;article&gt;
+      &lt;h3&gt;Marketing de contenidos&lt;/h3&gt;
+      &lt;p&gt;Ayudamos a las empresas a crecer en el mundo digital.&lt;/p&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+  &lt;aside&gt;&lt;p&gt;Agencia fundada en 2020 en C&oacute;rdoba, Argentina.&lt;/p&gt;&lt;/aside&gt;
+&lt;/main&gt;
+&lt;footer&gt;&lt;p&gt;Empresa Ficticia&lt;/p&gt;&lt;/footer&gt;</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="tall" title="Resultado de la estructura sem&aacute;ntica" data-code="code-semantic" sandbox></iframe>
+      </section>
+      <section id="impulso">
+        <h2><span class="number">09</span>Empresa Ficticia: HTML</h2>
+        <p>Ejemplo completo de la lectura, reunido e indentado. Incluye la funci&oacute;n JavaScript b&aacute;sica <code>mostrarMensaje()</code>.</p>
+        <pre><code id="code-case">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Empresa Ficticia - Agencia de Marketing Digital&lt;/title&gt;
+  &lt;link rel="stylesheet" type="text/css" href="estilo.css"&gt;
+  &lt;script&gt;
+    function mostrarMensaje() {
+      alert('&iexcl;Bienvenido a Empresa Ficticia!');
+    }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Empresa Ficticia&lt;/h1&gt;
+  &lt;p&gt;Agencia de marketing digital fundada en 2020 en C&oacute;rdoba, Argentina&lt;/p&gt;
+  &lt;p&gt;Nos especializamos en
+    &lt;span class="texto-en-linea"&gt;estrategias de marketing innovadoras y efectivas&lt;/span&gt;.
+  &lt;/p&gt;
+  &lt;a href="https://www.empresaficticia.com.ar"&gt;Visita nuestro sitio web&lt;/a&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Gesti&oacute;n de redes sociales&lt;/li&gt;
+    &lt;li&gt;SEO (Optimizaci&oacute;n para Motores de B&uacute;squeda)&lt;/li&gt;
+    &lt;li&gt;Marketing de contenidos&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;img src="logo _ empresa _ ficticia.jpg" alt="Logo de Empresa Ficticia"&gt;
+  &lt;button onclick="mostrarMensaje()"&gt;Conoce m&aacute;s sobre nosotros&lt;/button&gt;
+  &lt;div&gt;
+    &lt;p&gt;Ayudamos a las empresas a crecer en el mundo digital&lt;/p&gt;
+    &lt;p&gt;Nuestro enfoque personalizado asegura el &eacute;xito de nuestros clientes&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>Resultado con CSS</h3>
+        <iframe class="case" title="Empresa Ficticia con HTML, CSS y mensaje de bienvenida" data-code="code-case" sandbox="allow-scripts allow-modals"></iframe>
+      </section>
+      <section id="css">
+        <h2><span class="number">10</span>Empresa Ficticia: CSS</h2>
+        <h3>estilo.css</h3>
+        <pre><code id="code-css">body {
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: blue;
+}
+
+.texto-en-linea {
+  color: red;
+}</code></pre>
+        <p><code>body</code> establece la tipograf&iacute;a; <code>h1</code> colorea el t&iacute;tulo de azul; el selector de clase <code>.texto-en-linea</code> aplica rojo al texto del <code>span</code>.</p>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer><a href="index_m1l2.html">Lectura 2</a> &middot; <a href="index_m1l3.html">Lectura 3</a> &middot; <a href="index_m1l4.html">Lectura 4</a>.</footer>
+  <script>
+    const logoCanvas = document.createElement('canvas');
+    logoCanvas.width = 240;
+    logoCanvas.height = 88;
+    const logoContext = logoCanvas.getContext('2d');
+    logoContext.fillStyle = '#eaf0ed';
+    logoContext.fillRect(0, 0, 240, 88);
+    logoContext.fillStyle = '#076c56';
+    logoContext.font = 'bold 22px sans-serif';
+    logoContext.fillText('Empresa Ficticia', 18, 38);
+    logoContext.font = '13px sans-serif';
+    logoContext.fillText('Imagen de muestra', 18, 64);
+    const logoUrl = logoCanvas.toDataURL('image/png');
+
+    for (const preview of document.querySelectorAll('iframe[data-code]')) {
+      const source = document.getElementById(preview.dataset.code).textContent;
+      const previewDocument = new DOMParser().parseFromString(source, 'text/html');
+      previewDocument.documentElement.lang = 'es';
+      if (!previewDocument.querySelector('meta[name="viewport"]')) {
+        const viewport = previewDocument.createElement('meta');
+        viewport.name = 'viewport';
+        viewport.content = 'width=device-width, initial-scale=1';
+        previewDocument.head.append(viewport);
+      }
+      if (preview.dataset.code === 'code-case') {
+        previewDocument.querySelector('link[rel="stylesheet"]').remove();
+        const exampleStyle = previewDocument.createElement('style');
+        exampleStyle.textContent = document.getElementById('code-css').textContent;
+        previewDocument.head.append(exampleStyle);
+        const logo = previewDocument.querySelector('img');
+        logo.src = logoUrl;
+        logo.alt = 'Empresa Ficticia: imagen de muestra, no es el logo oficial';
+        logo.width = 240;
+        logo.height = 88;
+        logo.style.maxWidth = '100%';
+        logo.style.height = 'auto';
+      }
+      preview.srcdoc = '<!DOCTYPE html>\n' + previewDocument.documentElement.outerHTML;
+    }
+  </script>
+</body>
+</html>

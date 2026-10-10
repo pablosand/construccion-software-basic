@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ejemplos de HTML y CSS</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    iframe { display: block; width: 100%; height: 170px; border: 1px solid var(--line); background: #fff; }
+    .medium { height: 260px; }
+    .tall { height: 400px; }
+    .case { height: 760px; }
+    .table-wrap { overflow: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; } .case { height: 940px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Ejemplos de HTML y CSS</h1>
+    <p>Lectura 2 &middot; Hojas de estilo en cascada &middot; Caso Empresa Ficticia</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#reglas">Propiedades y reglas</a></li>
+        <li><a href="#integracion">Tres formas de aplicar CSS</a></li>
+        <li><a href="#cascada">Cascada y sobrescritura</a></li>
+        <li><a href="#sintaxis">Sintaxis y unidades</a></li>
+        <li><a href="#tipo">Selector de tipo</a></li>
+        <li><a href="#clase">Selector de clase</a></li>
+        <li><a href="#identificador">Selector de ID</a></li>
+        <li><a href="#atributo">Enlaces activos y atributos</a></li>
+        <li><a href="#listas">Listas de selectores</a></li>
+        <li><a href="#enlaces">Estados de los enlaces</a></li>
+        <li><a href="#valores">Palabras clave y tipos de datos</a></li>
+        <li><a href="#notacion">Combinadores y multiplicadores</a></li>
+        <li><a href="#cajas">Cajas, colores y tama&ntilde;os</a></li>
+        <li><a href="#herencia">Herencia</a></li>
+        <li><a href="#responsivo">Dise&ntilde;o responsivo</a></li>
+        <li><a href="#impulso">Caso Empresa Ficticia</a></li>
+      </ol>
+      <p><a href="index_m1l1.html">Lectura 1</a> &middot; <a href="index_m1l3.html">Lectura 3</a> &middot; <a href="index_m1l4.html">Lectura 4</a></p>
+    </nav>
+    <main id="contenido">
+      <section id="reglas">
+        <h2><span class="number">01</span>Propiedades y reglas</h2>
+        <h3>Una propiedad</h3>
+        <pre><code>p { font-size: 30px; }</code></pre>
+        <h3>Varias propiedades</h3>
+        <pre><code>p {
+  color: #FF0000;
+  font-size: 30px;
+}</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="P&aacute;rrafo rojo de 30 p&iacute;xeles" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>p { color: #FF0000; font-size: 30px; }</style></head><body><p>Texto con estilo CSS.</p></body></html>"></iframe>
+      </section>
+      <section id="integracion">
+        <h2><span class="number">02</span>Tres formas de aplicar CSS</h2>
+        <h3>Estilos en l&iacute;nea</h3>
+        <pre><code>&lt;p style="color: blue; font-size: 20px;"&gt;Texto con estilo en l&iacute;nea&lt;/p&gt;</code></pre>
+        <iframe title="Estilo en l&iacute;nea" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'></head><body><p style='color: blue; font-size: 20px;'>Texto con estilo en l&iacute;nea</p></body></html>"></iframe>
+        <h3>Estilos incrustados</h3>
+        <pre><code>&lt;head&gt;
+  &lt;style&gt;
+    p { color: blue; font-size: 20px; }
+  &lt;/style&gt;
+&lt;/head&gt;</code></pre>
+        <h3>Hoja externa</h3>
+        <pre><code>&lt;head&gt;
+  &lt;link rel="stylesheet" href="estilos.css"&gt;
+&lt;/head&gt;</code></pre>
+        <p>El atributo <code>style</code> afecta a un elemento. <code>style</code> dentro de la cabecera agrupa reglas del documento. <code>link</code> permite reutilizar un archivo CSS entre p&aacute;ginas.</p>
+      </section>
+      <section id="cascada">
+        <h2><span class="number">03</span>Cascada y sobrescritura</h2>
+        <h3>HTML</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Ejemplo de CSS en Cascada&lt;/title&gt;
+  &lt;link rel="stylesheet" href="estilo.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;section&gt;
+      &lt;p&gt;Texto en el primer p&aacute;rrafo. &lt;/p&gt;
+      &lt;p class="resaltado"&gt;Texto en el segundo p&aacute;rrafo resaltado. &lt;/p&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>section { font-size: 20px; color: #000000; }
+p { font-size: 24px; color: #FF0000; }
+p.resaltado { font-size: 30px; color: #0000FF; }</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="Cascada: p&aacute;rrafo rojo y p&aacute;rrafo resaltado azul" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>section { font-size: 20px; color: #000000; } p { font-size: 24px; color: #FF0000; } p.resaltado { font-size: 30px; color: #0000FF; }</style></head><body><main><section><p>Texto en el primer p&aacute;rrafo.</p><p class='resaltado'>Texto en el segundo p&aacute;rrafo resaltado.</p></section></main></body></html>"></iframe>
+        <p>Las reglas aplicadas directamente a los p&aacute;rrafos sustituyen los valores heredados de <code>section</code>. <code>p.resaltado</code> es m&aacute;s espec&iacute;fico que <code>p</code>.</p>
+      </section>
+      <section id="sintaxis">
+        <h2><span class="number">04</span>Sintaxis y unidades</h2>
+        <pre><code>h1 {
+  color: red;
+  font-size: 5em;
+}</code></pre>
+        <p>El selector es <code>h1</code>; cada declaraci&oacute;n contiene una propiedad, dos puntos y un valor. Las declaraciones se separan con punto y coma.</p>
+        <iframe title="Encabezado rojo con tama&ntilde;o 5em" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>h1 { color: red; font-size: 5em; }</style></head><body><h1>CSS</h1></body></html>"></iframe>
+        <p>Unidades citadas: <code>px</code>, <code>pt</code>, <code>in</code>, <code>cm</code>, <code>mm</code>, <code>em</code>, <code>rem</code> y <code>%</code>. En <code>font-size</code>, <code>em</code> se calcula respecto del tama&ntilde;o de fuente del padre; <code>rem</code>, respecto de la ra&iacute;z.</p>
+      </section>
+      <section id="tipo">
+        <h2><span class="number">05</span>Selector de tipo</h2>
+        <pre><code>h1 { color: navy; }</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="Selector de tipo h1" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>h1 { color: navy; }</style></head><body><h1>Empresa Ficticia</h1><p>El selector solo modifica los encabezados h1.</p></body></html>"></iframe>
+      </section>
+      <section id="clase">
+        <h2><span class="number">06</span>Selector de clase</h2>
+        <h3>CSS</h3>
+        <pre><code>.boton {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}</code></pre>
+        <h3>HTML</h3>
+        <pre><code>&lt;button class="boton"&gt;Enviar&lt;/button&gt;
+&lt;a href="#" class="boton"&gt;Leer m&aacute;s&lt;/a&gt;
+&lt;input type="submit" value="Enviar" class="boton"&gt;</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="Clase boton aplicada a tres elementos" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>.boton { display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border: none; border-radius: 4px; cursor: pointer; }</style></head><body><button class='boton'>Enviar</button> <a href='#' class='boton'>Leer m&aacute;s</a> <input type='submit' value='Enviar' class='boton'></body></html>"></iframe>
+      </section>
+      <section id="identificador">
+        <h2><span class="number">07</span>Selector de ID</h2>
+        <h3>HTML del cuerpo</h3>
+        <pre><code>&lt;div id="menu"&gt;
+  &lt;a href="#inicio"&gt;Inicio&lt;/a&gt;
+  &lt;a href="#servicios"&gt;Servicios&lt;/a&gt;
+  &lt;a href="#nosotros"&gt;Nosotros&lt;/a&gt;
+  &lt;a href="#contacto"&gt;Contacto&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>#menu {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+#menu a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 10px;
+}</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="Men&uacute; seleccionado mediante un ID" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>#menu { background-color: #333; color: #fff; padding: 10px; text-align: center; } #menu a { color: #fff; text-decoration: none; margin-right: 10px; }</style></head><body><div id='menu'><a href='#inicio'>Inicio</a><a href='#servicios'>Servicios</a><a href='#nosotros'>Nosotros</a><a href='#contacto'>Contacto</a></div></body></html>"></iframe>
+      </section>
+      <section id="atributo">
+        <h2><span class="number">08</span>Enlaces activos y atributos</h2>
+        <h3>HTML del cuerpo</h3>
+        <pre><code>&lt;ul&gt;
+  &lt;li&gt;&lt;a href="#inicio"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#servicios"&gt;Servicios&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#nosotros"&gt;Nosotros&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#contacto"&gt;Contacto&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#" class="activo"&gt;Enlace Activo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        <h3>CSS citado</h3>
+        <pre><code>ul li a { color: #333; text-decoration: none; padding: 5px 10px; }
+a.activo { font-weight: bold; color: #007bff; }</code></pre>
+        <h3>Resultado</h3>
+        <iframe title="Enlace destacado por su clase activo" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>ul li a { color: #333; text-decoration: none; padding: 5px 10px; } a.activo { font-weight: bold; color: #007bff; }</style></head><body><ul><li><a href='#inicio'>Inicio</a></li><li><a href='#servicios'>Servicios</a></li><li><a href='#nosotros'>Nosotros</a></li><li><a href='#contacto'>Contacto</a></li><li><a href='#' class='activo'>Enlace Activo</a></li></ul></body></html>"></iframe>
+        <h3>Ejemplo complementario de atributo</h3>
+        <pre><code>a[class~="activo"] { font-weight: bold; color: #007bff; }</code></pre>
+      </section>
+      <section id="listas">
+        <h2><span class="number">09</span>Listas de selectores</h2>
+        <h3>HTML del cuerpo</h3>
+        <pre><code>&lt;header class="encabezado"&gt;
+  &lt;h1&gt;Este es un t&iacute;tulo principal&lt;/h1&gt;
+  &lt;p&gt;Este es un p&aacute;rrafo en el encabezado. &lt;/p&gt;
+&lt;/header&gt;
+&lt;section class="contenido"&gt;
+  &lt;h2&gt;Secci&oacute;n de contenido&lt;/h2&gt;
+  &lt;p&gt;Este es un p&aacute;rrafo dentro de la secci&oacute;n de contenido. &lt;/p&gt;
+&lt;/section&gt;
+&lt;footer&gt;
+  &lt;p&gt;Este es un p&aacute;rrafo en el pie de p&aacute;gina. &lt;/p&gt;
+&lt;/footer&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>.encabezado, footer {
+  background-color: #f0f0f0;
+  padding: 10px;
+  box-shadow: rgb(150,150,150) 10px 10px 20px 10px;
+}
+h1, h2 { color: navy; text-decoration: underline; }
+p { font-size: 16px; line-height: 1.5; margin-bottom: 10px; }</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="tall" title="Listas de selectores y sombras" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>.encabezado, footer { background-color: #f0f0f0; padding: 10px; box-shadow: rgb(150,150,150) 10px 10px 20px 10px; } h1, h2 { color: navy; text-decoration: underline; } p { font-size: 16px; line-height: 1.5; margin-bottom: 10px; }</style></head><body><header class='encabezado'><h1>Este es un t&iacute;tulo principal</h1><p>Este es un p&aacute;rrafo en el encabezado.</p></header><section class='contenido'><h2>Secci&oacute;n de contenido</h2><p>Este es un p&aacute;rrafo dentro de la secci&oacute;n de contenido.</p></section><footer><p>Este es un p&aacute;rrafo en el pie de p&aacute;gina.</p></footer></body></html>"></iframe>
+        <p>Las comas permiten compartir declaraciones entre selectores. <code>padding</code> es el relleno interior; <code>margin</code> es el espacio exterior. El relleno no requiere un borde visible, a diferencia de lo que afirma la lectura.</p>
+      </section>
+      <section id="enlaces">
+        <h2><span class="number">10</span>Estados de los enlaces</h2>
+        <h3>HTML del cuerpo</h3>
+        <pre><code>&lt;h1&gt;Ejemplo de Estilos de Enlaces&lt;/h1&gt;
+&lt;p&gt;Prueba los diferentes estados de los enlaces:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href="#inicio"&gt;Inicio&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#servicios"&gt;Servicios&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#nosotros"&gt;Nosotros&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="#contacto"&gt;Contacto&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>a {
+  color: #007bff;
+  text-decoration: none;
+  padding: 5px 10px;
+  margin: 0 10px;
+}
+a:visited { color: purple; }
+a:hover { color: #ff6600; text-decoration: underline; }
+a:active { color: #ff0000; }</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="medium" title="Estados hover y active de los enlaces" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>a { color: #007bff; text-decoration: none; padding: 5px 10px; margin: 0 10px; } a:visited { color: purple; } a:hover { color: #ff6600; text-decoration: underline; } a:active { color: #ff0000; }</style></head><body><h1>Ejemplo de Estilos de Enlaces</h1><p>Prueba los diferentes estados de los enlaces:</p><ul><li><a href='#inicio'>Inicio</a></li><li><a href='#servicios'>Servicios</a></li><li><a href='#nosotros'>Nosotros</a></li><li><a href='#contacto'>Contacto</a></li></ul></body></html>"></iframe>
+      </section>
+      <section id="valores">
+        <h2><span class="number">11</span>Palabras clave y tipos de datos</h2>
+        <p>Palabras clave citadas: <code>auto</code>, <code>smaller</code>, <code>larger</code>, <code>ease-in</code>, <code>ease-out</code> y <code>ease-in-out</code>.</p>
+        <h3>Valores citados</h3>
+        <pre><code>box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+font-family: Arial, Helvetica, sans-serif;
+transform: rotate(45deg);
+content: "Universidad Siglo 21";
+color: #f00;
+background-color: rgba(0, 0, 255, 0.5);
+font: bold 16px sans-serif;</code></pre>
+        <p>Los &aacute;ngulos, cadenas y colores son tipos de datos CSS. <code>content</code> puede producir texto en un pseudoelemento, como <code>::before</code>.</p>
+        <h3>Correcci&oacute;n del ejemplo con barra</h3>
+        <pre><code>background-position: center / 50%;</code></pre>
+        <pre><code>background: #f0f0f0 center / 50% no-repeat;</code></pre>
+      </section>
+      <section id="notacion">
+        <h2><span class="number">12</span>Combinadores y multiplicadores</h2>
+        <p>La sintaxis formal describe qu&eacute; valores acepta una propiedad. Los s&iacute;mbolos <code>&amp;&amp;</code>, <code>||</code>, <code>|</code>, <code>*</code>, <code>+</code>, <code>?</code> y los rangos no se escriben literalmente en una hoja de estilos.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Notaci&oacute;n</th><th scope="col">Significado</th><th scope="col">Expresi&oacute;n citada</th></tr></thead>
+            <tbody>
+              <tr><td><code>[]</code></td><td>Agrupaci&oacute;n</td><td><code>font: bold [ small &amp;&amp; italic ] 16px/1.5 sans-serif;</code></td></tr>
+              <tr><td>Yuxtaposici&oacute;n</td><td>Secuencia ordenada</td><td><code>font: bold 16px sans-serif;</code></td></tr>
+              <tr><td><code>&amp;&amp;</code></td><td>Todos, en cualquier orden</td><td><code>background: url('imagen.png') no-repeat &amp;&amp; center;</code></td></tr>
+              <tr><td><code>||</code></td><td>Uno o m&aacute;s, en cualquier orden</td><td><code>order-style: solid || dotted || dashed;</code></td></tr>
+              <tr><td><code>|</code></td><td>Una alternativa</td><td><code>text-align: left | center | right;</code></td></tr>
+              <tr><td><code>*</code></td><td>Cero o m&aacute;s</td><td><code>font: bold smaller* 16px sans-serif;</code></td></tr>
+              <tr><td><code>+</code></td><td>Uno o m&aacute;s</td><td><code>margin: 10px 20px+;</code></td></tr>
+              <tr><td><code>?</code></td><td>Opcional</td><td><code>border-radius: 5px 10px?;</code></td></tr>
+              <tr><td><code>{}</code></td><td>Rango de repeticiones</td><td><code>font-size: 14px {1,3};</code></td></tr>
+              <tr><td><code>#</code></td><td>Lista separada por comas</td><td><code>box-shadow: 1px 1px 3px rgba(0,0,0,0.4)#;</code></td></tr>
+              <tr><td><code>!</code></td><td>Al menos un valor del grupo</td><td><code>[ font-size? line-height? ]!;</code></td></tr>
+              <tr><td><code>[min,max]</code></td><td>Rango num&eacute;rico inclusivo</td><td><code>&lt;integer [0,&infin;]&gt;</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Declaraciones v&aacute;lidas equivalentes</h3>
+        <pre><code>font: italic bold 16px/1.5 sans-serif;
+text-align: center;
+margin: 10px 20px;
+border-radius: 5px 10px;
+font-size: 14px;
+box-shadow: 1px 1px 3px rgba(0,0,0,0.4);</code></pre>
+        <p>La lectura tambi&eacute;n menciona reglas <code>@layer</code>, <code>@import</code>, <code>@media</code>, <code>@document</code> y <code>@font-face</code>, sin un ejemplo completo. <code>@media</code> se aplica en la secci&oacute;n de dise&ntilde;o responsivo.</p>
+      </section>
+      <section id="cajas">
+        <h2><span class="number">13</span>Cajas, colores y tama&ntilde;os</h2>
+        <h3>HTML del cuerpo</h3>
+        <pre><code>&lt;header&gt;&lt;h1&gt;Ejemplo de Tipos de Datos en CSS&lt;/h1&gt;&lt;/header&gt;
+&lt;main&gt;
+  &lt;section&gt;
+    &lt;h2&gt;Colores y Tama&ntilde;os&lt;/h2&gt;
+    &lt;div class="caja rojo peque&ntilde;a"&gt;Caja Roja Peque&ntilde;a&lt;/div&gt;
+    &lt;div class="caja azul grande"&gt;Caja Azul Grande&lt;/div&gt;
+  &lt;/section&gt;
+&lt;/main&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+header h1 { text-align: center; margin: 20px 0; color: #333; }
+section { margin: 20px; }
+section h2 { color: #f60; font-size: 24px; }
+.caja {
+  width: 200px;
+  height: 100px;
+  color: #fff;
+  text-align: center;
+  line-height: 100px;
+  margin-bottom: 20px;
+}
+.rojo { background-color: #f00; }
+.azul { background-color: #00f; }
+.peque&ntilde;a { font-size: smaller; }
+.grande { font-size: larger; }</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="tall" title="Caja roja peque&ntilde;a y caja azul grande" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>body { font-family: Arial, sans-serif; margin: 0; padding: 0; } header h1 { text-align: center; margin: 20px 0; color: #333; } section { margin: 20px; } section h2 { color: #f60; font-size: 24px; } .caja { width: 200px; height: 100px; color: #fff; text-align: center; line-height: 100px; margin-bottom: 20px; } .rojo { background-color: #f00; } .azul { background-color: #00f; } .peque&ntilde;a { font-size: smaller; } .grande { font-size: larger; }</style></head><body><header><h1>Ejemplo de Tipos de Datos en CSS</h1></header><main><section><h2>Colores y Tama&ntilde;os</h2><div class='caja rojo peque&ntilde;a'>Caja Roja Peque&ntilde;a</div><div class='caja azul grande'>Caja Azul Grande</div></section></main></body></html>"></iframe>
+      </section>
+      <section id="herencia">
+        <h2><span class="number">14</span>Herencia</h2>
+        <h3>HTML</h3>
+        <pre><code>&lt;p&gt;Texto verde con &lt;em&gt;color heredado&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Texto verde con &lt;em class="distinto"&gt;color sobrescrito&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Texto verde con &lt;em class="borde"&gt;borde heredado expl&iacute;citamente&lt;/em&gt;.&lt;/p&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>p { color: green; border: medium solid; padding: 10px; }
+em.distinto { color: blue; }
+em.borde { border: inherit; }</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="medium" title="Herencia del color y del borde" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><style>p { color: green; border: medium solid; padding: 10px; } em.distinto { color: blue; } em.borde { border: inherit; }</style></head><body><p>Texto verde con <em>color heredado</em>.</p><p>Texto verde con <em class='distinto'>color sobrescrito</em>.</p><p>Texto verde con <em class='borde'>borde heredado expl&iacute;citamente</em>.</p></body></html>"></iframe>
+        <p><code>color</code> se hereda por defecto; <code>border</code> no. <code>inherit</code> fuerza a tomar el valor del padre.</p>
+        <pre><code>all: revert;</code></pre>
+      </section>
+      <section id="responsivo">
+        <h2><span class="number">15</span>Dise&ntilde;o responsivo</h2>
+        <h3>HTML</h3>
+        <pre><code>&lt;div class="servicios"&gt;
+  &lt;article&gt;Redes sociales&lt;/article&gt;
+  &lt;article&gt;SEO&lt;/article&gt;
+  &lt;article&gt;Marketing de contenidos&lt;/article&gt;
+&lt;/div&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>.servicios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+.servicios article { padding: 16px; background: #eaf0ed; }
+@media (max-width: 600px) {
+  .servicios { grid-template-columns: 1fr; }
+}</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="medium" title="Grid adaptable al ancho de la vista previa" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><style>.servicios { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: 100%; } .servicios article { padding: 16px; background: #eaf0ed; } @media (max-width: 600px) { .servicios { grid-template-columns: 1fr; } }</style></head><body><div class='servicios'><article>Redes sociales</article><article>SEO</article><article>Marketing de contenidos</article></div></body></html>"></iframe>
+      </section>
+      <section id="impulso">
+        <h2><span class="number">16</span>Caso Empresa Ficticia</h2>
+        <h3>HTML</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Empresa Ficticia&lt;/title&gt;
+  &lt;link rel="stylesheet" href="estilo.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;
+    &lt;div class="marca"&gt;
+      &lt;img src="logo_empresa_ficticia.jpg" alt="Logo de Empresa Ficticia" width="80" height="40"&gt;
+      &lt;h1&gt;Empresa Ficticia&lt;/h1&gt;
+    &lt;/div&gt;
+    &lt;nav aria-label="Principal"&gt;
+      &lt;a href="#inicio"&gt;Inicio&lt;/a&gt;
+      &lt;a href="#servicios"&gt;Servicios&lt;/a&gt;
+      &lt;a href="#nosotros"&gt;Sobre nosotros&lt;/a&gt;
+      &lt;a href="#contacto"&gt;Contacto&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main&gt;
+    &lt;section id="inicio"&gt;
+      &lt;h2&gt;Empresa Ficticia&lt;/h2&gt;
+      &lt;p&gt;Ayudamos a las empresas a crecer en el mundo digital.&lt;/p&gt;
+      &lt;a class="boton" href="#contacto"&gt;Contactar&lt;/a&gt;
+    &lt;/section&gt;
+    &lt;section id="servicios"&gt;
+      &lt;h2&gt;Servicios&lt;/h2&gt;
+      &lt;ul class="servicios"&gt;
+        &lt;li&gt;Gesti&oacute;n de redes sociales&lt;/li&gt;
+        &lt;li&gt;SEO&lt;/li&gt;
+        &lt;li&gt;Marketing de contenidos&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/section&gt;
+    &lt;section id="nosotros"&gt;
+      &lt;h2&gt;Sobre nosotros&lt;/h2&gt;
+      &lt;p&gt;Agencia fundada en 2020 en C&oacute;rdoba, Argentina. Creamos estrategias personalizadas.&lt;/p&gt;
+    &lt;/section&gt;
+    &lt;section id="contacto"&gt;
+      &lt;h2&gt;Contacto&lt;/h2&gt;
+      &lt;form action="#contacto" method="get"&gt;
+        &lt;label for="nombre"&gt;Nombre&lt;/label&gt;
+        &lt;input id="nombre" name="nombre" autocomplete="name" required&gt;
+        &lt;label for="email"&gt;Email&lt;/label&gt;
+        &lt;input id="email" name="email" type="email" autocomplete="email" required&gt;
+        &lt;label for="mensaje"&gt;Mensaje&lt;/label&gt;
+        &lt;textarea id="mensaje" name="mensaje" rows="4" required&gt;&lt;/textarea&gt;
+        &lt;button class="boton" type="submit"&gt;Enviar&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;Empresa Ficticia &middot; C&oacute;rdoba, Argentina&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code>* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; color: #202a29; }
+header { padding: 20px; background: #eaf0ed; border-bottom: 1px solid #ccd8d2; }
+.marca { display: flex; align-items: center; gap: 12px; }
+h1 { margin: 0; font-size: 24px; }
+nav { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; }
+a { color: #076c56; }
+a:hover { text-decoration: underline; }
+main { max-width: 900px; margin: auto; padding: 20px; }
+section { padding: 20px 0; border-bottom: 1px solid #d5dfdc; }
+h2 { margin: 0 0 12px; font-size: 22px; }
+.servicios { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding-left: 20px; }
+form { display: grid; gap: 8px; max-width: 480px; }
+input, textarea { width: 100%; padding: 10px; border: 1px solid #899b93; font: inherit; }
+textarea { resize: vertical; }
+.boton { display: inline-block; width: fit-content; padding: 10px 20px; background: #076c56; color: white; border: 0; border-radius: 4px; font: inherit; text-decoration: none; cursor: pointer; }
+:focus-visible { outline: 3px solid #b85b15; outline-offset: 3px; }
+footer { padding: 20px; background: #eaf0ed; }
+@media (max-width: 600px) {
+  .servicios { grid-template-columns: 1fr; }
+  .marca { flex-wrap: wrap; }
+}</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="case" title="Empresa Ficticia: p&aacute;gina y formulario sin JavaScript" sandbox srcdoc="<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Empresa Ficticia</title><style>* { box-sizing: border-box; } body { margin: 0; font-family: Arial, sans-serif; color: #202a29; } header { padding: 20px; background: #eaf0ed; border-bottom: 1px solid #ccd8d2; } .marca { display: flex; align-items: center; gap: 12px; } h1 { margin: 0; font-size: 24px; } nav { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; } a { color: #076c56; } a:hover { text-decoration: underline; } main { max-width: 900px; margin: auto; padding: 20px; } section { padding: 20px 0; border-bottom: 1px solid #d5dfdc; } h2 { margin: 0 0 12px; font-size: 22px; } .servicios { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding-left: 20px; } form { display: grid; gap: 8px; max-width: 480px; } input, textarea { width: 100%; padding: 10px; border: 1px solid #899b93; font: inherit; } textarea { resize: vertical; } .boton { display: inline-block; width: fit-content; padding: 10px 20px; background: #076c56; color: white; border: 0; border-radius: 4px; font: inherit; text-decoration: none; cursor: pointer; } :focus-visible { outline: 3px solid #b85b15; outline-offset: 3px; } footer { padding: 20px; background: #eaf0ed; } @media (max-width: 600px) { .servicios { grid-template-columns: 1fr; } .marca { flex-wrap: wrap; } }</style></head><body><header><div class='marca'><img src='https://placehold.co/80x40/076c56/ffffff.png?text=ID' alt='Logo de muestra, no oficial' width='80' height='40'><h1>Empresa Ficticia</h1></div><nav aria-label='Principal'><a href='#inicio'>Inicio</a><a href='#servicios'>Servicios</a><a href='#nosotros'>Sobre nosotros</a><a href='#contacto'>Contacto</a></nav></header><main><section id='inicio'><h2>Empresa Ficticia</h2><p>Ayudamos a las empresas a crecer en el mundo digital.</p><a class='boton' href='#contacto'>Contactar</a></section><section id='servicios'><h2>Servicios</h2><ul class='servicios'><li>Gesti&oacute;n de redes sociales</li><li>SEO</li><li>Marketing de contenidos</li></ul></section><section id='nosotros'><h2>Sobre nosotros</h2><p>Agencia fundada en 2020 en C&oacute;rdoba, Argentina. Creamos estrategias personalizadas.</p></section><section id='contacto'><h2>Contacto</h2><form action='#contacto' method='get'><label for='nombre'>Nombre</label><input id='nombre' name='nombre' autocomplete='name' required><label for='email'>Email</label><input id='email' name='email' type='email' autocomplete='email' required><label for='mensaje'>Mensaje</label><textarea id='mensaje' name='mensaje' rows='4' required></textarea><button class='boton' type='submit'>Enviar</button></form></section></main><footer>Empresa Ficticia &middot; C&oacute;rdoba, Argentina</footer></body></html>"></iframe>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer><a href="index_m1l1.html">Lectura 1</a> &middot; <a href="index_m1l3.html">Lectura 3</a> &middot; <a href="index_m1l4.html">Lectura 4</a>.</footer>
+</body>
+</html>

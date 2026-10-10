@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ejemplos de DOM y eventos</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    iframe { display: block; width: 100%; height: 180px; border: 1px solid var(--line); background: #fff; }
+    .medium { height: 300px; }
+    .tall { height: 400px; }
+    .case { height: 1200px; }
+    .result-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 0 8px; }
+    .result-bar h3 { margin: 0; }
+    button { font: inherit; font-size: 13px; padding: 6px 12px; background: white; color: var(--accent); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; }
+    button:hover { background: #eaf0ed; }
+    .table-wrap { overflow: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; } .case { height: 1650px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } .result-bar button { display: none; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Ejemplos de DOM y eventos</h1>
+    <p>Lectura 4 &middot; JavaScript para contenido din&aacute;mico &middot; Caso Empresa Ficticia</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#inline">JavaScript en l&iacute;nea</a></li>
+        <li><a href="#interno">JavaScript interno</a></li>
+        <li><a href="#externo">JavaScript externo</a></li>
+        <li><a href="#carga">Carga de scripts</a></li>
+        <li><a href="#window">BOM: window</a></li>
+        <li><a href="#history">BOM: history</a></li>
+        <li><a href="#bom">navigator, screen y location</a></li>
+        <li><a href="#api">Interfaces del DOM</a></li>
+        <li><a href="#dom">Creaci&oacute;n y modificaci&oacute;n del DOM</a></li>
+        <li><a href="#eventos">Tipos de eventos</a></li>
+        <li><a href="#atributo">Eventos mediante atributos</a></li>
+        <li><a href="#propiedad">Eventos mediante propiedades</a></li>
+        <li><a href="#listener">addEventListener</a></li>
+        <li><a href="#impulso">Caso Empresa Ficticia</a></li>
+      </ol>
+      <p><a href="index_m1l1.html">Lectura 1</a> &middot; <a href="index_m1l2.html">Lectura 2</a> &middot; <a href="index_m1l3.html">Lectura 3</a></p>
+    </nav>
+    <main id="contenido">
+      <noscript><p>JavaScript est&aacute; desactivado. El c&oacute;digo est&aacute; disponible, pero las vistas previas no se ejecutar&aacute;n.</p></noscript>
+      <section id="inline">
+        <h2><span class="number">01</span>JavaScript en l&iacute;nea</h2>
+        <h3>HTML</h3>
+        <pre><code id="inline-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Ejemplo de JavaScript Inline&lt;/title&gt;
+  &lt;link rel="stylesheet" href="estilo.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;button class="boton" onclick="alert('Bot&oacute;n apretado!')"&gt;Haz clic aqu&iacute;&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>CSS compartido por los tres ejemplos</h3>
+        <pre><code id="button-css">.boton {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-inline">Reiniciar ejemplo</button></div>
+        <iframe id="preview-inline" title="JavaScript en l&iacute;nea: alerta al pulsar el bot&oacute;n" sandbox="allow-scripts allow-modals" data-html="inline-html" data-css="button-css"></iframe>
+      </section>
+      <section id="interno">
+        <h2><span class="number">02</span>JavaScript interno</h2>
+        <pre><code id="internal-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Ejemplo de JavaScript Interno&lt;/title&gt;
+  &lt;link rel="stylesheet" href="estilo.css"&gt;
+  &lt;script&gt;
+    function mostrarAlerta() {
+      alert('Bot&oacute;n apretado!');
+    }
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;button class="boton" onclick="mostrarAlerta()"&gt;Haz clic aqu&iacute;&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-internal">Reiniciar ejemplo</button></div>
+        <iframe id="preview-internal" title="JavaScript interno: funci&oacute;n mostrarAlerta" sandbox="allow-scripts allow-modals" data-html="internal-html" data-css="button-css"></iframe>
+      </section>
+      <section id="externo">
+        <h2><span class="number">03</span>JavaScript externo</h2>
+        <h3>HTML</h3>
+        <pre><code id="external-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Ejemplo de JavaScript Externo&lt;/title&gt;
+  &lt;link rel="stylesheet" href="estilo.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;button class="boton" onclick="mostrarAlerta()"&gt;Haz clic aqu&iacute;&lt;/button&gt;
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>script.js</h3>
+        <pre><code id="alert-js">function mostrarAlerta() {
+  alert('Bot&oacute;n apretado!');
+}</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-external">Reiniciar ejemplo</button></div>
+        <iframe id="preview-external" title="Ejemplo de archivo JavaScript externo integrado" sandbox="allow-scripts allow-modals" data-html="external-html" data-css="button-css" data-js="alert-js"></iframe>
+      </section>
+      <section id="carga">
+        <h2><span class="number">04</span>Carga de scripts</h2>
+        <h3>En la cabecera con defer</h3>
+        <pre><code>&lt;head&gt;
+  &lt;script src="script.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre>
+        <p>Descarga el script sin bloquear el an&aacute;lisis del HTML y lo ejecuta despu&eacute;s de terminarlo, antes de <code>DOMContentLoaded</code>.</p>
+        <h3>En la cabecera con async</h3>
+        <pre><code>&lt;head&gt;
+  &lt;script src="script.js" async&gt;&lt;/script&gt;
+&lt;/head&gt;</code></pre>
+        <p>Lo ejecuta cuando termina la descarga; no garantiza el orden entre scripts ni que el DOM est&eacute; listo.</p>
+        <h3>Al final del cuerpo</h3>
+        <pre><code>&lt;body&gt;
+  &lt;h1&gt;Mi p&aacute;gina&lt;/h1&gt;
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;</code></pre>
+      </section>
+      <section id="window">
+        <h2><span class="number">05</span>BOM: window</h2>
+        <h3>HTML</h3>
+        <pre><code id="window-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Ejemplo del Objeto Window&lt;/title&gt;
+  &lt;script src="script.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Ejemplo del Objeto Window&lt;/h1&gt;
+  &lt;p&gt;Revisar el navegador y seguir instrucciones&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>JavaScript</h3>
+        <pre><code id="window-js">function demoWindow() {
+  console.log('URL actual:', window.location.href);
+  console.log('T&iacute;tulo del Documento:', window.document.title);
+  let userConfirmed = window.confirm('&iquest;Deseas continuar?');
+  if (userConfirmed) {
+    window.alert('El usuario ha confirmado');
+  } else {
+    window.alert('El usuario ha cancelado');
+  }
+}
+window.onload = demoWindow;</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-window">Ejecutar ejemplo</button></div>
+        <iframe class="medium" id="preview-window" title="Objeto window y confirmaci&oacute;n" sandbox="allow-scripts allow-modals" data-html="window-html" data-js="window-js" data-console data-manual></iframe>
+      </section>
+      <section id="history">
+        <h2><span class="number">06</span>BOM: history</h2>
+        <p>La lectura presenta un recorrido entre tres archivos. Estos fragmentos conservan la navegaci&oacute;n del ejemplo; no se ejecutan aqu&iacute; para evitar salir de la p&aacute;gina de ejemplos.</p>
+        <h3>index.html del ejemplo de historial</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;P&aacute;gina 1&lt;/title&gt;
+  &lt;script src="script.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;P&aacute;gina 1&lt;/h1&gt;
+  &lt;p&gt;Esta es la primera p&aacute;gina&lt;/p&gt;
+  &lt;button onclick="location.href='pagina2.html'"&gt;Ir a P&aacute;gina 2&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>pagina2.html: cuerpo del documento</h3>
+        <pre><code>&lt;h1&gt;P&aacute;gina 2&lt;/h1&gt;
+&lt;p&gt;Esta es la segunda p&aacute;gina&lt;/p&gt;
+&lt;button onclick="location.href='pagina3.html'"&gt;Ir a P&aacute;gina 3&lt;/button&gt;
+&lt;button onclick="location.href='index.html'"&gt;Ir a P&aacute;gina 1&lt;/button&gt;</code></pre>
+        <h3>pagina3.html: cuerpo del documento</h3>
+        <pre><code>&lt;h1&gt;P&aacute;gina 3&lt;/h1&gt;
+&lt;p&gt;Esta es la tercera p&aacute;gina&lt;/p&gt;
+&lt;button onclick="location.href='pagina2.html'"&gt;Ir a P&aacute;gina 2&lt;/button&gt;</code></pre>
+        <h3>Controles que faltan en el HTML original</h3>
+        <pre><code>&lt;button id="btnAtras"&gt;Atr&aacute;s&lt;/button&gt;
+&lt;button id="btnAdelante"&gt;Adelante&lt;/button&gt;
+&lt;button id="btnDosAtras"&gt;Dos p&aacute;ginas atr&aacute;s&lt;/button&gt;
+&lt;button id="btnDosAdelante"&gt;Dos p&aacute;ginas adelante&lt;/button&gt;</code></pre>
+        <h3>script.js</h3>
+        <pre><code>document.getElementById('btnAtras').addEventListener('click', function() {
+  history.back();
+});
+document.getElementById('btnAdelante').addEventListener('click', function() {
+  history.forward();
+});
+document.getElementById('btnDosAtras').addEventListener('click', function() {
+  history.go(-2);
+});
+document.getElementById('btnDosAdelante').addEventListener('click', function() {
+  history.go(2);
+});</code></pre>
+      </section>
+      <section id="bom">
+        <h2><span class="number">07</span>navigator, screen y location</h2>
+        <pre><code id="bom-js">console.log('Navegador:', navigator.userAgent);
+console.log('Idioma:', navigator.language);
+console.log('Pantalla:', screen.width, screen.height);
+console.log('URL:', location.href);</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-bom">Reiniciar ejemplo</button></div>
+        <iframe class="medium" id="preview-bom" title="Informaci&oacute;n del navegador y de la pantalla" sandbox="allow-scripts" data-js="bom-js" data-console></iframe>
+        <h3>Navegaci&oacute;n a otro recurso</h3>
+        <pre><code>location.assign('pagina2.html');</code></pre>
+      </section>
+      <section id="api">
+        <h2><span class="number">08</span>Interfaces del DOM</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Interfaz o m&eacute;todo</th><th scope="col">Ejemplo citado</th></tr></thead>
+            <tbody>
+              <tr><td>Document / Element</td><td><code>elemento.ownerDocument</code></td></tr>
+              <tr><td>Selecci&oacute;n por ID</td><td><code>document.getElementById('Id')</code></td></tr>
+              <tr><td>Selecci&oacute;n por etiqueta</td><td><code>document.getElementsByTagName('div')</code></td></tr>
+              <tr><td>Creaci&oacute;n de un elemento</td><td><code>document.createElement('p')</code></td></tr>
+              <tr><td>Incorporaci&oacute;n de un nodo</td><td><code>parentElement.appendChild(nuevoElemento)</code></td></tr>
+              <tr><td>Creaci&oacute;n de texto</td><td><code>document.createTextNode('Este es un nuevo contenido')</code></td></tr>
+              <tr><td>NodeList</td><td><code>lista.item(indice)</code>, <code>lista[indice]</code>, <code>lista.forEach(manejador)</code></td></tr>
+              <tr><td>Creaci&oacute;n de atributos</td><td><code>document.createAttribute('class')</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>innerHTML</h3>
+        <pre><code>element.innerHTML = '&lt;p&gt;Nuevo contenido&lt;/p&gt;';
+const contenido = element.innerHTML;</code></pre>
+        <h3>Estilo y atributos</h3>
+        <pre><code>element.style.left = '20px';
+const posicion = element.style.left;
+element.setAttribute('class', 'miClase');
+const valor = element.getAttribute('class');</code></pre>
+        <h3>Aplicaci&oacute;n complementaria</h3>
+        <pre><code id="api-html">&lt;div id="Id"&gt;Contenido original&lt;/div&gt;</code></pre>
+        <pre><code id="api-js">const miElemento = document.getElementById('Id');
+miElemento.style.position = 'relative';
+miElemento.style.left = '20px';
+miElemento.setAttribute('class', 'miClase');
+const elementos = document.getElementsByTagName('div');
+const nuevoElemento = document.createElement('p');
+nuevoElemento.textContent = 'Nuevo contenido';
+miElemento.appendChild(nuevoElemento);
+console.log('Clase:', miElemento.getAttribute('class'));
+console.log('Posici&oacute;n:', miElemento.style.left);
+console.log('Elementos div:', elementos.length);
+console.log('Documento propietario:', miElemento.ownerDocument === document);</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-api">Reiniciar ejemplo</button></div>
+        <iframe class="medium" id="preview-api" title="Selecci&oacute;n, creaci&oacute;n, estilos y atributos DOM" sandbox="allow-scripts" data-html="api-html" data-js="api-js" data-console></iframe>
+        <h3>Registro de eventos y carga</h3>
+        <pre><code>element.addEventListener('click', function() {
+  alert('Clic!');
+});
+window.onload = function() {
+  console.log('P&aacute;gina cargada');
+};</code></pre>
+      </section>
+      <section id="dom">
+        <h2><span class="number">09</span>Creaci&oacute;n y modificaci&oacute;n del DOM</h2>
+        <h3>HTML</h3>
+        <pre><code id="dom-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Ejemplo de DOM&lt;/title&gt;
+  &lt;script src="script.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Bienvenido a la P&aacute;gina&lt;/h1&gt;
+  &lt;div id="contenido"&gt;
+    &lt;p&gt;Este es un p&aacute;rrafo original&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;button id="mostrarAlert"&gt;Mostrar Alerta&lt;/button&gt;
+  &lt;button id="agregarElemento"&gt;Agregar Elemento&lt;/button&gt;
+  &lt;button id="cambiarContenido"&gt;Cambiar Contenido&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>JavaScript</h3>
+        <pre><code id="dom-js">window.onload = function() {
+  window.alert('Comienzo de la p&aacute;gina');
+  const mostrarAlertButton = document.getElementById('mostrarAlert');
+  const agregarElementoButton = document.getElementById('agregarElemento');
+  const cambiarContenidoButton = document.getElementById('cambiarContenido');
+  mostrarAlertButton.onclick = function() {
+    window.alert('Se ha presionado el bot&oacute;n de mostrar alerta');
+  };
+  agregarElementoButton.onclick = function() {
+    const nuevoElemento = document.createElement('h2');
+    const texto = document.createTextNode('Este es un nuevo contenido');
+    nuevoElemento.appendChild(texto);
+    document.body.appendChild(nuevoElemento);
+  };
+  cambiarContenidoButton.onclick = function() {
+    const contenidoDiv = document.getElementById('contenido');
+    contenidoDiv.innerHTML = '&lt;p&gt;Se cambi&oacute; el contenido&lt;/p&gt;';
+  };
+};</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-dom">Ejecutar ejemplo</button></div>
+        <iframe class="tall" id="preview-dom" title="Aplicaci&oacute;n del DOM: agregar elementos y cambiar contenido" sandbox="allow-scripts allow-modals" data-html="dom-html" data-js="dom-js" data-manual></iframe>
+      </section>
+      <section id="eventos">
+        <h2><span class="number">10</span>Tipos de eventos</h2>
+        <table>
+          <thead><tr><th scope="col">Categor&iacute;a</th><th scope="col">Eventos citados</th></tr></thead>
+          <tbody>
+            <tr><td>Mouse</td><td><code>click</code>, <code>mouseover</code>, <code>mousedown</code></td></tr>
+            <tr><td>Teclado</td><td><code>keydown</code>, <code>keyup</code>, <code>keypress</code></td></tr>
+            <tr><td>Formulario</td><td><code>submit</code>, <code>change</code>, <code>focus</code></td></tr>
+            <tr><td>Carga</td><td><code>load</code>, <code>DOMContentLoaded</code></td></tr>
+            <tr><td>Ventana</td><td><code>resize</code>, <code>scroll</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <section id="atributo">
+        <h2><span class="number">11</span>Eventos mediante atributos</h2>
+        <pre><code id="attribute-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;title&gt;Ejemplo de Atributo de Evento&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;button onclick="mostrarMensaje()"&gt;Presionar bot&oacute;n&lt;/button&gt;
+  &lt;script&gt;
+    function mostrarMensaje() {
+      alert('&iexcl;Bot&oacute;n presionado!');
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-attribute">Reiniciar ejemplo</button></div>
+        <iframe id="preview-attribute" title="Evento declarado en el atributo onclick" sandbox="allow-scripts allow-modals" data-html="attribute-html"></iframe>
+      </section>
+      <section id="propiedad">
+        <h2><span class="number">12</span>Eventos mediante propiedades</h2>
+        <pre><code id="property-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;title&gt;Ejemplo de Propiedad de Evento&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;button id="miBoton"&gt;Presionar bot&oacute;n&lt;/button&gt;
+  &lt;script&gt;
+    const boton = document.getElementById('miBoton');
+    boton.onclick = function() {
+      alert('&iexcl;Bot&oacute;n presionado!');
+    };
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-property">Reiniciar ejemplo</button></div>
+        <iframe id="preview-property" title="Evento declarado en la propiedad onclick" sandbox="allow-scripts allow-modals" data-html="property-html"></iframe>
+        <p>Asignar otra funci&oacute;n a <code>onclick</code> sustituye la anterior. <code>addEventListener</code> permite registrar varios manejadores.</p>
+      </section>
+      <section id="listener">
+        <h2><span class="number">13</span>addEventListener</h2>
+        <h3>Sintaxis</h3>
+        <pre><code>elemento.addEventListener(tipoEvento, manejador, opciones);</code></pre>
+        <p><code>opciones</code> es opcional y puede incluir <code>capture</code>, <code>once</code> y <code>passive</code>. Los corchetes de la sintaxis explicativa de la lectura no se escriben para indicar un argumento opcional.</p>
+        <h3>HTML</h3>
+        <pre><code id="listener-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;title&gt;Ejemplo de addEventListener&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Ejemplo de addEventListener&lt;/h1&gt;
+  &lt;button id="miBoton"&gt;Presionar el bot&oacute;n&lt;/button&gt;
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>JavaScript</h3>
+        <pre><code id="listener-js">document.addEventListener('DOMContentLoaded', function() {
+  const boton = document.getElementById('miBoton');
+  boton.addEventListener('click', function() {
+    document.body.style.backgroundColor = 'lightgreen';
+  });
+});</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-listener">Reiniciar ejemplo</button></div>
+        <iframe id="preview-listener" title="addEventListener cambia el fondo a verde claro" sandbox="allow-scripts" data-html="listener-html" data-js="listener-js"></iframe>
+      </section>
+      <section id="impulso">
+        <h2><span class="number">14</span>Caso Empresa Ficticia</h2>
+        <h3>HTML</h3>
+        <pre><code id="case-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Empresa Ficticia&lt;/title&gt;
+  &lt;link rel="stylesheet" href="estilo.css"&gt;
+  &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;
+    &lt;div class="marca"&gt;
+      &lt;img src="logo_impulso_digital.jpg" alt="Logo de Empresa Ficticia" width="80" height="40"&gt;
+      &lt;h1&gt;Empresa Ficticia&lt;/h1&gt;
+    &lt;/div&gt;
+    &lt;nav aria-label="Principal"&gt;
+      &lt;a href="#inicio"&gt;Inicio&lt;/a&gt;
+      &lt;a href="#servicios"&gt;Servicios&lt;/a&gt;
+      &lt;a href="#nosotros"&gt;Sobre nosotros&lt;/a&gt;
+      &lt;a href="#contacto"&gt;Contacto&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main&gt;
+    &lt;section id="inicio"&gt;
+      &lt;h2&gt;Empresa Ficticia&lt;/h2&gt;
+      &lt;p&gt;Ayudamos a las empresas a crecer en el mundo digital.&lt;/p&gt;
+      &lt;a class="boton" href="#contacto"&gt;Contactar&lt;/a&gt;
+    &lt;/section&gt;
+    &lt;section id="servicios"&gt;
+      &lt;h2&gt;Nuestros servicios&lt;/h2&gt;
+      &lt;div id="lista-servicios"&gt;&lt;/div&gt;
+    &lt;/section&gt;
+    &lt;section id="nosotros"&gt;
+      &lt;h2&gt;Sobre nosotros&lt;/h2&gt;
+      &lt;p&gt;Agencia fundada en 2020 en C&oacute;rdoba, Argentina.&lt;/p&gt;
+    &lt;/section&gt;
+    &lt;section id="contacto"&gt;
+      &lt;h2&gt;Contacto&lt;/h2&gt;
+      &lt;form id="formulario-contacto"&gt;
+        &lt;label for="nombre"&gt;Nombre&lt;/label&gt;
+        &lt;input id="nombre" name="nombre" autocomplete="name" required&gt;
+        &lt;label for="email"&gt;Email&lt;/label&gt;
+        &lt;input id="email" name="email" type="email" autocomplete="email" required&gt;
+        &lt;label for="mensaje"&gt;Mensaje&lt;/label&gt;
+        &lt;textarea id="mensaje" name="mensaje" rows="3" required&gt;&lt;/textarea&gt;
+        &lt;button class="boton" type="submit"&gt;Enviar&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;Empresa Ficticia &middot; C&oacute;rdoba, Argentina&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code id="case-css">* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; color: #202a29; }
+header { padding: 20px; background: #eaf0ed; }
+.marca { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 24px; }
+nav { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; }
+a { color: #076c56; }
+main { max-width: 900px; margin: auto; padding: 20px; }
+section { padding: 20px 0; border-bottom: 1px solid #d5dfdc; }
+h2 { margin: 0 0 12px; font-size: 22px; }
+h3 { margin: 0 0 8px; font-size: 17px; }
+#lista-servicios { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.servicio { padding: 16px; background-color: #f4f7f6; border-top: 2px solid #076c56; }
+.servicio p { margin: 6px 0; }
+.servicio.destacado { background-color: #d9eee5; }
+form { display: grid; gap: 8px; max-width: 480px; }
+input, textarea { width: 100%; padding: 10px; border: 1px solid #899b93; font: inherit; }
+textarea { resize: vertical; }
+.boton { display: inline-block; width: fit-content; padding: 10px 20px; background: #076c56; color: white; border: 0; border-radius: 4px; font: inherit; text-decoration: none; cursor: pointer; }
+:focus-visible { outline: 3px solid #b85b15; outline-offset: 3px; }
+footer { padding: 20px; background: #eaf0ed; }
+@media (max-width: 600px) {
+  #lista-servicios { grid-template-columns: 1fr; }
+}</code></pre>
+        <h3>JavaScript: app.js</h3>
+        <pre><code id="case-js">class Servicio {
+  constructor(nombre, precio, duracion) {
+    this.nombre = nombre;
+    this.precio = precio;
+    this.duracion = duracion;
+  }
+  obtenerDetalles() {
+    return `Precio: $${this.precio} | Duraci&oacute;n: ${this.duracion}`;
+  }
+  crearElemento() {
+    const articulo = document.createElement('article');
+    articulo.className = 'servicio';
+    const titulo = document.createElement('h3');
+    const detalles = document.createElement('p');
+    titulo.textContent = this.nombre;
+    detalles.textContent = this.obtenerDetalles();
+    articulo.append(titulo, detalles);
+    return articulo;
+  }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('P&aacute;gina cargada: DOMContentLoaded');
+  const servicios = [
+    new Servicio('Gesti&oacute;n de Redes Sociales', 100000, '1 mes'),
+    new Servicio('SEO', 300000, '2 meses'),
+    new Servicio('Marketing de Contenidos', 150000, '1 mes'),
+    new Servicio('Dise&ntilde;o y Desarrollo Web', 500000, '3 meses')
+  ];
+  const contenedor = document.getElementById('lista-servicios');
+  for (const servicio of servicios) {
+    const elemento = servicio.crearElemento();
+    elemento.addEventListener('mouseover', function() {
+      elemento.classList.add('destacado');
+    });
+    elemento.addEventListener('mouseout', function(evento) {
+      if (!elemento.contains(evento.relatedTarget)) {
+        elemento.classList.remove('destacado');
+      }
+    });
+    contenedor.appendChild(elemento);
+  }
+  document.addEventListener('keydown', function(evento) {
+    console.log('Tecla presionada:', evento.key);
+  });
+  const formulario = document.getElementById('formulario-contacto');
+  formulario.addEventListener('submit', function(evento) {
+    evento.preventDefault();
+    alert('Formulario enviado');
+  });
+});</code></pre>
+        <div class="result-bar"><h3>Resultado</h3><button type="button" data-preview="preview-case">Reiniciar ejemplo</button></div>
+        <iframe class="case" id="preview-case" title="Empresa Ficticia: servicios, teclado y formulario con eventos" sandbox="allow-scripts allow-modals allow-forms" data-html="case-html" data-css="case-css" data-js="case-js" data-console data-logo></iframe>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer><a href="index_m1l1.html">Lectura 1</a> &middot; <a href="index_m1l2.html">Lectura 2</a> &middot; <a href="index_m1l3.html">Lectura 3</a>.</footer>
+  <script>
+    const logoCanvas = document.createElement('canvas');
+    logoCanvas.width = 160;
+    logoCanvas.height = 80;
+    const logoContext = logoCanvas.getContext('2d');
+    logoContext.fillStyle = '#076c56';
+    logoContext.fillRect(0, 0, 160, 80);
+    logoContext.fillStyle = '#ffffff';
+    logoContext.font = 'bold 36px sans-serif';
+    logoContext.fillText('ID', 58, 44);
+    logoContext.font = '14px sans-serif';
+    logoContext.fillText('MUESTRA', 47, 66);
+
+    function ejecutarEjemplo(preview) {
+      const source = preview.dataset.html ? document.getElementById(preview.dataset.html).textContent : '<!DOCTYPE html><html lang="es"><head><title>Ejemplo del BOM</title></head><body></body></html>';
+      const example = new DOMParser().parseFromString(source, 'text/html');
+      const ejecucion = Number(preview.dataset.ejecucion || 0) + 1;
+      preview.dataset.ejecucion = String(ejecucion);
+      for (const external of example.querySelectorAll('link[rel="stylesheet"], script[src]')) external.remove();
+      if (!example.querySelector('meta[name="viewport"]')) {
+        const viewport = example.createElement('meta');
+        viewport.name = 'viewport';
+        viewport.content = 'width=device-width, initial-scale=1';
+        example.head.append(viewport);
+      }
+      const status = example.createElement('p');
+      status.id = 'estado-ejecucion';
+      status.textContent = 'Ejecuci\u00f3n ' + ejecucion;
+      status.style.cssText = 'margin:8px;color:#586663;font:12px/1.6 sans-serif';
+      example.body.prepend(status);
+      if (preview.dataset.css) {
+        const style = example.createElement('style');
+        style.textContent = document.getElementById(preview.dataset.css).textContent;
+        example.head.append(style);
+      }
+      if (preview.hasAttribute('data-logo')) {
+        const logo = example.querySelector('img');
+        logo.src = logoCanvas.toDataURL('image/png');
+        logo.alt = 'Logo de muestra, no oficial';
+      }
+      const output = example.createElement('pre');
+      output.id = 'consola';
+      output.setAttribute('aria-label', 'Salida de consola');
+      output.setAttribute('role', 'log');
+      output.style.cssText = 'margin:16px 8px;padding:12px;background:#eaf0ed;color:#223b32;white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 Consolas,monospace;max-height:200px;overflow:auto';
+      output.hidden = !preview.hasAttribute('data-console');
+      example.body.append(output);
+      const recorder = example.createElement('script');
+      recorder.textContent = `
+        const mensajes = [];
+        const logOriginal = console.log.bind(console);
+        function mostrarSalida() {
+          const salida = document.getElementById('consola');
+          if (salida) {
+            salida.textContent = mensajes.join(String.fromCharCode(10));
+            salida.scrollTop = salida.scrollHeight;
+          }
+        }
+        console.log = function(...valores) {
+          logOriginal(...valores);
+          mensajes.push(valores.map(String).join(' '));
+          if (mensajes.length > 100) mensajes.shift();
+          mostrarSalida();
+        };
+        window.addEventListener('error', function(evento) {
+          const salida = document.getElementById('consola');
+          if (salida) {
+            salida.hidden = false;
+            salida.dataset.error = 'true';
+            mensajes.push('Error: ' + evento.message);
+            mostrarSalida();
+          }
+        });
+        document.addEventListener('DOMContentLoaded', mostrarSalida);
+      `;
+      example.head.prepend(recorder);
+      if (preview.dataset.js) {
+        const script = example.createElement('script');
+        script.textContent = document.getElementById(preview.dataset.js).textContent;
+        example.body.append(script);
+      }
+      preview.srcdoc = '<!DOCTYPE html>' + example.documentElement.outerHTML;
+    }
+
+    for (const preview of document.querySelectorAll('iframe[data-html], iframe[data-js]')) {
+      if (preview.hasAttribute('data-manual')) {
+        preview.srcdoc = '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"></head><body><p>Sin ejecutar</p></body></html>';
+      } else {
+        ejecutarEjemplo(preview);
+      }
+    }
+    for (const button of document.querySelectorAll('button[data-preview]')) {
+      const preview = document.getElementById(button.dataset.preview);
+      button.setAttribute('aria-controls', preview.id);
+      button.setAttribute('aria-label', button.textContent + ': ' + preview.title);
+      button.addEventListener('click', function() {
+        ejecutarEjemplo(preview);
+        button.textContent = 'Reiniciar ejemplo';
+      });
+    }
+  </script>
+</body>
+</html>

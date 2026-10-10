@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ejemplos de JavaScript</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    iframe { display: block; width: 100%; height: 155px; border: 1px solid var(--line); background: #fff; }
+    .long-output { height: 270px; }
+    .case { height: 1050px; }
+    .result-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
+    .result-bar h3 { margin: 0; }
+    button { font: inherit; font-size: 13px; padding: 6px 12px; background: white; color: var(--accent); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; }
+    button:hover { background: #eaf0ed; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; } .case { height: 1450px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } button { display: none; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Ejemplos de JavaScript</h1>
+    <p>Lectura 3 &middot; Variables, objetos y clases &middot; Caso Empresa Ficticia</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#ejecucion">Ejecuci&oacute;n de JavaScript</a></li>
+        <li><a href="#variables">var, let y const</a></li>
+        <li><a href="#operadores">Operadores</a></li>
+        <li><a href="#tipos">Tipos de datos</a></li>
+        <li><a href="#condicionales">Condicionales</a></li>
+        <li><a href="#bucles">Estructuras repetitivas</a></li>
+        <li><a href="#funciones">Funciones</a></li>
+        <li><a href="#this">La palabra clave this</a></li>
+        <li><a href="#objetos">Objetos y m&eacute;todos</a></li>
+        <li><a href="#constructores">Constructores y prototype</a></li>
+        <li><a href="#create">Object.create()</a></li>
+        <li><a href="#arreglos">Arreglos</a></li>
+        <li><a href="#herencia">Herencia protot&iacute;pica</a></li>
+        <li><a href="#clases">Clases y extends</a></li>
+        <li><a href="#impulso">Caso Empresa Ficticia</a></li>
+      </ol>
+      <p><a href="index_m1l1.html">Lectura 1</a> &middot; <a href="index_m1l2.html">Lectura 2</a> &middot; <a href="index_m1l4.html">Lectura 4</a></p>
+    </nav>
+    <main id="contenido">
+      <noscript><p>JavaScript est&aacute; desactivado. El c&oacute;digo sigue disponible, pero las salidas y el caso final no se ejecutar&aacute;n.</p></noscript>
+      <section id="ejecucion">
+        <h2><span class="number">01</span>Ejecuci&oacute;n de JavaScript</h2>
+        <h3>Inclusi&oacute;n en un documento HTML</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Ejemplo de JavaScript&lt;/title&gt;
+  &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;JavaScript&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>app.js: salida en consola</h3>
+        <pre><code data-run id="js-console">console.log("Hola, JavaScript");</code></pre>
+        <h3>Mensaje modal del navegador</h3>
+        <pre><code>alert("Hola, JavaScript");</code></pre>
+        <button type="button" id="mostrar-alerta">Mostrar mensaje</button>
+        <h3>Ejecuci&oacute;n con Node.js</h3>
+        <pre><code>node app.js</code></pre>
+        <p><code>console.log</code> funciona en el navegador y en Node.js. <code>alert</code> es una API del navegador, no est&aacute; disponible por defecto en Node.js.</p>
+      </section>
+      <section id="variables">
+        <h2><span class="number">02</span>var, let y const</h2>
+        <h3>var: &aacute;mbito de funci&oacute;n</h3>
+        <pre><code data-run id="js-var">function ejemplo() {
+  var numero = 5;
+  console.log(numero);
+  if (true) {
+    var numero = 10;
+    console.log(numero);
+  }
+  console.log(numero);
+}
+ejemplo();</code></pre>
+        <h3>let: &aacute;mbito de bloque</h3>
+        <pre><code data-run id="js-let">function ejemplo() {
+  let numero = 5;
+  console.log(numero);
+  if (true) {
+    let numero = 10;
+    console.log(numero);
+  }
+  console.log(numero);
+}
+ejemplo();</code></pre>
+        <h3>const: sin reasignaci&oacute;n</h3>
+        <pre><code data-run id="js-const">function ejemplo() {
+  const numero = 5;
+  console.log(numero);
+  if (true) {
+    const numero = 10;
+    console.log(numero);
+  }
+  console.log(numero);
+}
+ejemplo();</code></pre>
+        <p>La lectura recomienda <code>camelCase</code> para variables y funciones, <code>PascalCase</code> para clases y constructores, y nombres como <code>MAX_INTENTOS</code> para constantes de configuraci&oacute;n. JavaScript distingue may&uacute;sculas y min&uacute;sculas.</p>
+      </section>
+      <section id="operadores">
+        <h2><span class="number">03</span>Operadores</h2>
+        <h3>Aritm&eacute;ticos</h3>
+        <pre><code data-run id="js-arithmetic">let primerNumero = 10;
+let segundoNumero = 5;
+console.log(primerNumero + segundoNumero);
+console.log(primerNumero * segundoNumero);
+console.log(primerNumero % segundoNumero);</code></pre>
+        <p>Otros operadores citados: resta <code>-</code>, divisi&oacute;n <code>/</code>, incremento <code>++</code> y decremento <code>--</code>.</p>
+        <h3>Asignaci&oacute;n</h3>
+        <pre><code data-run id="js-assignment">let numero = 10;
+numero += 5;
+console.log(numero);</code></pre>
+        <p>Asignaciones compuestas citadas: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code> y <code>%=</code>.</p>
+        <h3>Comparaci&oacute;n</h3>
+        <pre><code data-run id="js-comparison">let edad = 25;
+console.log(edad &gt;= 18);
+console.log(edad == '25');
+console.log(edad === '25');</code></pre>
+        <p><code>==</code> puede convertir tipos; <code>===</code> compara tipo y valor. Tambi&eacute;n se citan <code>!=</code>, <code>!==</code>, <code>&gt;</code>, <code>&lt;</code> y <code>&lt;=</code>.</p>
+        <h3>L&oacute;gicos</h3>
+        <pre><code data-run id="js-logical">let esMayorDeEdad = true;
+let tieneLicencia = false;
+console.log(esMayorDeEdad &amp;&amp; tieneLicencia);
+console.log(esMayorDeEdad || tieneLicencia);
+console.log(!esMayorDeEdad);</code></pre>
+        <h3>Ternario</h3>
+        <pre><code data-run id="js-ternary">let edad = 20;
+let esMayorDeEdad = (edad &gt;= 18) ? "Mayor de edad" : "Menor de edad";
+console.log(esMayorDeEdad);</code></pre>
+        <h3>typeof</h3>
+        <pre><code data-run id="js-typeof">let nombre = "Juan";
+console.log(typeof nombre);</code></pre>
+        <p>Otros operadores citados: <code>+</code> para concatenar, <code>.</code> para propiedades, <code>[]</code> para &iacute;ndices, <code>new</code> para crear instancias y <code>instanceof</code> para consultar su cadena de prototipos.</p>
+      </section>
+      <section id="tipos">
+        <h2><span class="number">04</span>Tipos de datos</h2>
+        <table>
+          <thead><tr><th scope="col">Tipo</th><th scope="col">Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td>Undefined</td><td><code>undefined</code></td></tr>
+            <tr><td>Boolean</td><td><code>true</code>, <code>false</code></td></tr>
+            <tr><td>Number</td><td><code>25</code>, <code>0.15</code></td></tr>
+            <tr><td>String</td><td><code>"Juan"</code></td></tr>
+            <tr><td>BigInt</td><td><code>123n</code></td></tr>
+            <tr><td>Symbol</td><td><code>Symbol("id")</code></td></tr>
+            <tr><td>Null</td><td><code>null</code></td></tr>
+          </tbody>
+        </table>
+        <p>Son los siete tipos primitivos citados. Los objetos agrupan propiedades y las funciones son objetos invocables.</p>
+        <h3>Aplicaci&oacute;n complementaria de tipado din&aacute;mico</h3>
+        <pre><code data-run id="js-dynamic">let dato = 25;
+console.log(typeof dato);
+dato = true;
+console.log(typeof dato);
+console.log(typeof null);</code></pre>
+      </section>
+      <section id="condicionales">
+        <h2><span class="number">05</span>Condicionales</h2>
+        <h3>if</h3>
+        <pre><code data-run id="js-if">let edad = 18;
+if (edad &gt;= 18) {
+  console.log("Es un adulto");
+}</code></pre>
+        <h3>if...else</h3>
+        <pre><code data-run id="js-else">let edad = 16;
+if (edad &gt;= 18) {
+  console.log("Es un adulto");
+} else {
+  console.log("Es menor de edad");
+}</code></pre>
+        <h3>Aplicaci&oacute;n complementaria de else if y switch</h3>
+        <pre><code data-run id="js-switch">const edad = 16;
+if (edad &gt;= 18) {
+  console.log("Adulto");
+} else if (edad &gt;= 13) {
+  console.log("Adolescente");
+} else {
+  console.log("Ni&ntilde;o");
+}
+const servicio = "SEO";
+switch (servicio) {
+  case "SEO":
+    console.log("Optimizaci&oacute;n para motores de b&uacute;squeda");
+    break;
+  default:
+    console.log("Otro servicio");
+}</code></pre>
+      </section>
+      <section id="bucles">
+        <h2><span class="number">06</span>Estructuras repetitivas</h2>
+        <h3>for</h3>
+        <pre><code data-run id="js-for">for (let indice = 0; indice &lt; 5; indice++) {
+  console.log("N&uacute;mero de iteraci&oacute;n: " + indice);
+}</code></pre>
+        <h3>while</h3>
+        <pre><code data-run id="js-while">let contador = 0;
+while (contador &lt; 5) {
+  console.log("El contador es: " + contador);
+  contador++;
+}</code></pre>
+        <h3>do...while</h3>
+        <pre><code data-run id="js-do">let contador = 0;
+do {
+  console.log("El contador es: " + contador);
+  contador++;
+} while (contador &lt; 5);</code></pre>
+        <p><code>do...while</code> ejecuta el bloque al menos una vez. En los tres ejemplos se obtienen cinco iteraciones, de 0 a 4.</p>
+      </section>
+      <section id="funciones">
+        <h2><span class="number">07</span>Funciones</h2>
+        <h3>Declaraci&oacute;n y return</h3>
+        <pre><code data-run id="js-total">function calcularTotal(precio, cantidad) {
+  return precio * cantidad;
+}
+let total = calcularTotal(10, 3);
+console.log(total);</code></pre>
+        <h3>Expresi&oacute;n de funci&oacute;n</h3>
+        <pre><code data-run id="js-discount">let calcularDescuento = function(precio, descuento) {
+  return precio - (precio * descuento / 100);
+};
+let precioConDescuento = calcularDescuento(100, 10);
+console.log(precioConDescuento);</code></pre>
+        <h3>Funci&oacute;n de flecha</h3>
+        <pre><code data-run id="js-arrow">let calcularImpuesto = (precio, tasa) =&gt; {
+  return precio * tasa;
+};
+console.log(calcularImpuesto(100, 0.15));</code></pre>
+        <p>Las funciones son valores de primera clase: pueden asignarse, pasarse como argumentos y devolverse desde otra funci&oacute;n. Las flechas no tienen <code>this</code> ni <code>arguments</code> propios y no se pueden invocar con <code>new</code>.</p>
+      </section>
+      <section id="this">
+        <h2><span class="number">08</span>La palabra clave this</h2>
+        <p>En un m&eacute;todo, <code>this</code> depende de c&oacute;mo se invoca la funci&oacute;n. Con <code>new</code> se refiere a la nueva instancia. Los ejemplos siguientes aplican ambos casos.</p>
+      </section>
+      <section id="objetos">
+        <h2><span class="number">09</span>Objetos y m&eacute;todos</h2>
+        <h3>Objeto simple</h3>
+        <pre><code data-run id="js-person">let persona = {
+  nombre: "Juan",
+  edad: 30,
+  ciudad: "Salta"
+};
+console.log(persona);</code></pre>
+        <h3>Objeto con m&eacute;todo</h3>
+        <pre><code data-run id="js-method">let producto = {
+  nombre: "Camisa",
+  precio: 5000,
+  calcularPrecioDescuento: function(descuento) {
+    let precioConDescuento = this.precio * (1 - descuento);
+    return precioConDescuento;
+  }
+};
+console.log(producto.nombre);
+console.log(producto.precio);
+console.log(producto.calcularPrecioDescuento(0.2));</code></pre>
+        <h3>Literal de objeto y cadena de plantilla</h3>
+        <pre><code data-run id="js-literal">let producto = {
+  nombre: "Camisa",
+  precio: 5000,
+  cantidad: 100,
+  mostrarDetalles: function() {
+    return `${this.nombre} cuesta $${this.precio} y hay ${this.cantidad} en stock.`;
+  }
+};
+console.log(producto.mostrarDetalles());</code></pre>
+      </section>
+      <section id="constructores">
+        <h2><span class="number">10</span>Constructores y prototype</h2>
+        <pre><code data-run id="js-constructor">function Producto(nombre, precio, cantidad) {
+  this.nombre = nombre;
+  this.precio = precio;
+  this.cantidad = cantidad;
+}
+Producto.prototype.mostrarDetalles = function() {
+  return `${this.nombre} cuesta $${this.precio} y hay ${this.cantidad} en stock.`;
+};
+let producto1 = new Producto("Camisa", 5000, 100);
+let producto2 = new Producto("Pantalones", 4000, 50);
+console.log(producto1.mostrarDetalles());
+console.log(producto2.mostrarDetalles());
+console.log(producto1.mostrarDetalles === producto2.mostrarDetalles);
+console.log(producto1 instanceof Producto);</code></pre>
+        <p>Las instancias comparten el m&eacute;todo del prototipo. Las dos comprobaciones finales son complementarias y muestran esa reutilizaci&oacute;n.</p>
+      </section>
+      <section id="create">
+        <h2><span class="number">11</span>Object.create()</h2>
+        <pre><code data-run id="js-create">let productoPrototipo = {
+  mostrarDetalles: function() {
+    return `${this.nombre} cuesta $${this.precio} y hay ${this.cantidad} en stock.`;
+  }
+};
+let producto3 = Object.create(productoPrototipo);
+producto3.nombre = "Zapatos";
+producto3.precio = 6000;
+producto3.cantidad = 30;
+console.log(producto3.mostrarDetalles());</code></pre>
+        <p>El nuevo objeto hereda de <code>productoPrototipo</code>. La cadena de prototipos termina en <code>null</code>; <code>Object.prototype</code> no es el mismo valor que <code>null</code>.</p>
+      </section>
+      <section id="arreglos">
+        <h2><span class="number">12</span>Arreglos</h2>
+        <h3>Acceso, modificaci&oacute;n y recorrido</h3>
+        <pre><code data-run id="js-array">let ropa = ["Camisa", "Pantal&oacute;n", "Remera", 25, true];
+console.log(ropa[0]);
+ropa[2] = "Campera";
+console.log(ropa);
+console.log(ropa.length);
+for (let indice = 0; indice &lt; ropa.length; indice++) {
+  console.log(ropa[indice]);
+}</code></pre>
+        <h3>Constructor Array: un argumento num&eacute;rico</h3>
+        <pre><code data-run id="js-array-size">const ropa = new Array(2);
+console.log(ropa.length);
+console.log(ropa[0]);</code></pre>
+        <h3>Constructor Array: varios elementos</h3>
+        <pre><code data-run id="js-array-items">const ropa = new Array("Camisa", "Pantalon");
+console.log(ropa.length);
+console.log(ropa[0]);</code></pre>
+        <h3>M&eacute;todo push</h3>
+        <pre><code data-run id="js-push">let miArreglo = [1, 2, 3];
+miArreglo.push(4);
+console.log(miArreglo);</code></pre>
+        <p>La lectura tambi&eacute;n menciona <code>pop</code>, <code>map</code> y <code>filter</code>. Los &iacute;ndices empiezan en 0; <code>new Array(2)</code> crea dos posiciones vac&iacute;as, no un arreglo que contiene el n&uacute;mero 2.</p>
+      </section>
+      <section id="herencia">
+        <h2><span class="number">13</span>Herencia protot&iacute;pica</h2>
+        <h3>Un objeto como prototipo</h3>
+        <pre><code data-run id="js-object-inheritance">const producto = { nombre: "Camisa", precio: 5000 };
+const oferta = Object.create(producto);
+oferta.descuento = 1000;
+console.log(oferta.nombre);
+console.log(oferta.precio);
+console.log(oferta.descuento);</code></pre>
+        <h3>Herencia mediante funciones constructoras</h3>
+        <pre><code data-run id="js-prototype-inheritance">function Producto(nombre, precio) {
+  this.nombre = nombre;
+  this.precio = precio;
+}
+function Oferta(nombre, precio, descuento) {
+  Producto.call(this, nombre, precio);
+  this.descuento = descuento;
+}
+Oferta.prototype = Object.create(Producto.prototype);
+Oferta.prototype.constructor = Oferta;
+const oferta = new Oferta("Camisa", 5000, 1000);
+console.log(oferta.nombre);
+console.log(oferta.precio);
+console.log(oferta.descuento);</code></pre>
+      </section>
+      <section id="clases">
+        <h2><span class="number">14</span>Clases y extends</h2>
+        <h3>Estructura citada</h3>
+        <pre><code>class NombreDeLaClase {
+  constructor(parametros) {
+  }
+  metodo() {
+  }
+}</code></pre>
+        <h3>Producto y Oferta</h3>
+        <pre><code data-run id="js-classes">class Producto {
+  constructor(nombre, precio) {
+    this.nombre = nombre;
+    this.precio = precio;
+  }
+}
+class Oferta extends Producto {
+  constructor(nombre, precio, descuento) {
+    super(nombre, precio);
+    this.descuento = descuento;
+  }
+}
+const oferta = new Oferta("Camisa", 5000, 1000);
+console.log(oferta.nombre);
+console.log(oferta.precio);
+oferta.nombre = "Pantal&oacute;n";
+console.log(oferta.nombre);</code></pre>
+        <p><code>extends</code> establece herencia y <code>super()</code> inicializa la parte heredada. <code>const</code> impide reasignar la referencia, pero no impide modificar las propiedades del objeto.</p>
+      </section>
+      <section id="impulso">
+        <h2><span class="number">15</span>Caso Empresa Ficticia</h2>
+        <h3>HTML</h3>
+        <pre><code id="case-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Empresa Ficticia&lt;/title&gt;
+  &lt;link rel="stylesheet" href="estilo.css"&gt;
+  &lt;script src="app.js" defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;
+    &lt;div class="marca"&gt;
+      &lt;img src="logo_impulso_digital.jpg" alt="Logo de Empresa Ficticia" width="80" height="40"&gt;
+      &lt;h1&gt;Empresa Ficticia&lt;/h1&gt;
+    &lt;/div&gt;
+    &lt;nav aria-label="Principal"&gt;
+      &lt;a href="#inicio"&gt;Inicio&lt;/a&gt;
+      &lt;a href="#servicios"&gt;Servicios&lt;/a&gt;
+      &lt;a href="#nosotros"&gt;Sobre nosotros&lt;/a&gt;
+      &lt;a href="#contacto"&gt;Contacto&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+  &lt;main&gt;
+    &lt;section id="inicio"&gt;
+      &lt;h2&gt;Empresa Ficticia&lt;/h2&gt;
+      &lt;p&gt;Ayudamos a las empresas a crecer en el mundo digital.&lt;/p&gt;
+      &lt;a class="boton" href="#contacto"&gt;Contactar&lt;/a&gt;
+    &lt;/section&gt;
+    &lt;section id="servicios"&gt;
+      &lt;h2&gt;Nuestros servicios&lt;/h2&gt;
+      &lt;div id="lista-servicios"&gt;&lt;/div&gt;
+    &lt;/section&gt;
+    &lt;section id="nosotros"&gt;
+      &lt;h2&gt;Sobre nosotros&lt;/h2&gt;
+      &lt;p&gt;Agencia fundada en 2020 en C&oacute;rdoba, Argentina.&lt;/p&gt;
+    &lt;/section&gt;
+    &lt;section id="contacto"&gt;
+      &lt;h2&gt;Contacto&lt;/h2&gt;
+      &lt;form action="#contacto"&gt;
+        &lt;label for="nombre"&gt;Nombre&lt;/label&gt;
+        &lt;input id="nombre" name="nombre" autocomplete="name" required&gt;
+        &lt;label for="email"&gt;Email&lt;/label&gt;
+        &lt;input id="email" name="email" type="email" autocomplete="email" required&gt;
+        &lt;label for="mensaje"&gt;Mensaje&lt;/label&gt;
+        &lt;textarea id="mensaje" name="mensaje" rows="3" required&gt;&lt;/textarea&gt;
+        &lt;button class="boton" type="submit"&gt;Enviar&lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;Empresa Ficticia &middot; C&oacute;rdoba, Argentina&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>CSS</h3>
+        <pre><code id="case-css">* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; color: #202a29; }
+header { padding: 20px; background: #eaf0ed; }
+.marca { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+h1 { margin: 0; font-size: 24px; }
+nav { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; }
+a { color: #076c56; }
+main { max-width: 900px; margin: auto; padding: 20px; }
+section { padding: 20px 0; border-bottom: 1px solid #d5dfdc; }
+h2 { margin: 0 0 12px; font-size: 22px; }
+h3 { margin: 0 0 8px; font-size: 17px; }
+#lista-servicios { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+article { padding: 12px 0; border-top: 2px solid #076c56; }
+article p { margin: 6px 0; }
+form { display: grid; gap: 8px; max-width: 480px; }
+input, textarea { width: 100%; padding: 10px; border: 1px solid #899b93; font: inherit; }
+textarea { resize: vertical; }
+.boton { display: inline-block; width: fit-content; padding: 10px 20px; background: #076c56; color: white; border: 0; border-radius: 4px; font: inherit; text-decoration: none; cursor: pointer; }
+:focus-visible { outline: 3px solid #b85b15; outline-offset: 3px; }
+footer { padding: 20px; background: #eaf0ed; }
+@media (max-width: 600px) {
+  #lista-servicios { grid-template-columns: 1fr; }
+}</code></pre>
+        <h3>JavaScript: app.js</h3>
+        <pre><code id="case-js">class Servicio {
+  constructor(nombre, precio, duracion) {
+    this.nombre = nombre;
+    this.precio = precio;
+    this.duracion = duracion;
+  }
+  obtenerDetalles() {
+    return `Precio: $${this.precio} | Duraci&oacute;n: ${this.duracion}`;
+  }
+  crearElemento() {
+    const articulo = document.createElement("article");
+    const titulo = document.createElement("h3");
+    const detalles = document.createElement("p");
+    titulo.textContent = this.nombre;
+    detalles.textContent = this.obtenerDetalles();
+    articulo.append(titulo, detalles);
+    return articulo;
+  }
+}
+const servicios = [
+  new Servicio("Gesti&oacute;n de Redes Sociales", 100000, "1 mes"),
+  new Servicio("SEO", 300000, "2 meses"),
+  new Servicio("Marketing de Contenidos", 150000, "1 mes"),
+  new Servicio("Dise&ntilde;o y Desarrollo Web", 500000, "3 meses")
+];
+const contenedor = document.getElementById("lista-servicios");
+for (const servicio of servicios) {
+  contenedor.append(servicio.crearElemento());
+}</code></pre>
+        <h3>Resultado</h3>
+        <iframe class="case" id="case-preview" title="Empresa Ficticia con cuatro instancias de Servicio" sandbox="allow-scripts"></iframe>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer><a href="index_m1l1.html">Lectura 1</a> &middot; <a href="index_m1l2.html">Lectura 2</a> &middot; <a href="index_m1l4.html">Lectura 4</a>.</footer>
+  <script>
+    function ejecutarEjemplo(code, preview) {
+      const source = JSON.stringify(code.textContent).replaceAll('<', String.fromCharCode(92) + 'u003c');
+      const ejecucion = Number(preview.dataset.ejecucion || 0) + 1;
+      preview.dataset.ejecucion = String(ejecucion);
+      preview.srcdoc = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{margin:12px;color:#202a29;font:14px/1.6 Consolas,monospace}pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}p{margin:0 0 8px;color:#586663;font:12px/1.6 sans-serif}</style></head><body><p id="ejecucion">Ejecuci&oacute;n ${ejecucion}</p><pre id="salida" role="status"></pre><script>
+        const salida = document.getElementById('salida');
+        const lineas = [];
+        function formatear(valor) {
+          if (valor === undefined) return 'undefined';
+          if (typeof valor === 'string') return valor;
+          if (typeof valor === 'bigint') return String(valor) + 'n';
+          if (typeof valor === 'symbol' || typeof valor === 'function') return String(valor);
+          return JSON.stringify(valor);
+        }
+        const consola = { log(...valores) { lineas.push(valores.map(formatear).join(' ')); } };
+        try {
+          new Function('console', ${source})(consola);
+          salida.textContent = lineas.join(String.fromCharCode(10)) || 'Sin salida en consola.';
+        } catch (error) {
+          salida.textContent = error.name + ': ' + error.message;
+          salida.dataset.error = 'true';
+        }
+      <\/script></body></html>`;
+    }
+
+    for (const code of document.querySelectorAll('code[data-run]')) {
+      const bar = document.createElement('div');
+      bar.className = 'result-bar';
+      const heading = document.createElement('h3');
+      heading.textContent = 'Salida';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = 'Ejecutar de nuevo';
+      button.setAttribute('aria-label', 'Ejecutar de nuevo: ' + code.id);
+      const preview = document.createElement('iframe');
+      preview.title = 'Salida de ' + code.id;
+      preview.id = 'resultado-' + code.id;
+      preview.setAttribute('sandbox', 'allow-scripts');
+      button.setAttribute('aria-controls', preview.id);
+      if (code.id === 'js-array') preview.className = 'long-output';
+      bar.append(heading, button);
+      code.parentElement.after(bar, preview);
+      button.addEventListener('click', () => ejecutarEjemplo(code, preview));
+      ejecutarEjemplo(code, preview);
+    }
+
+    document.getElementById('mostrar-alerta').addEventListener('click', () => alert('Hola, JavaScript'));
+
+    const logoCanvas = document.createElement('canvas');
+    logoCanvas.width = 160;
+    logoCanvas.height = 80;
+    const logoContext = logoCanvas.getContext('2d');
+    logoContext.fillStyle = '#076c56';
+    logoContext.fillRect(0, 0, 160, 80);
+    logoContext.fillStyle = '#ffffff';
+    logoContext.font = 'bold 36px sans-serif';
+    logoContext.fillText('ID', 58, 44);
+    logoContext.font = '14px sans-serif';
+    logoContext.fillText('MUESTRA', 47, 66);
+
+    const caseDocument = new DOMParser().parseFromString(document.getElementById('case-html').textContent, 'text/html');
+    caseDocument.querySelector('link').remove();
+    caseDocument.querySelector('script').remove();
+    const caseStyle = caseDocument.createElement('style');
+    caseStyle.textContent = document.getElementById('case-css').textContent;
+    caseDocument.head.append(caseStyle);
+    const caseScript = caseDocument.createElement('script');
+    caseScript.textContent = document.getElementById('case-js').textContent;
+    caseDocument.body.append(caseScript);
+    const logo = caseDocument.querySelector('img');
+    logo.src = logoCanvas.toDataURL('image/png');
+    logo.alt = 'Logo de muestra de Empresa Ficticia, no oficial';
+    document.getElementById('case-preview').srcdoc = '<!DOCTYPE html>\n' + caseDocument.documentElement.outerHTML;
+  </script>
+</body>
+</html>

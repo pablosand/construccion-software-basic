@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java y arquitectura web</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 4; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .table-wrap { overflow: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    .architecture { margin: 24px 0; }
+    .architecture figcaption { margin-bottom: 14px; font-weight: 700; }
+    .architecture-flow { list-style: none; padding: 0; margin: 0; }
+    .architecture-node { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 20px; padding: 14px 18px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 4px; background: #fff; }
+    .architecture-node h3 { margin: 0; font-size: 16px; }
+    .architecture-node p { margin: 0; font-size: 14px; }
+    .architecture-node small { display: block; color: var(--muted); font-size: 13px; }
+    .architecture-node code { overflow-wrap: anywhere; }
+    .architecture-node.view { border-left-color: #296fa3; background: #edf5fb; }
+    .architecture-node.data { border-left-color: #a64b25; background: #fff3ed; }
+    .architecture-connector { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 42px; padding: 4px 0; color: var(--muted); font-size: 13px; text-align: center; }
+    .architecture-connector span { color: var(--accent); font-size: 26px; line-height: 1; }
+    @media (max-width: 520px) { .architecture-node { grid-template-columns: minmax(0, 1fr); padding: 12px; } }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Java y arquitectura web</h1>
+    <p>Lectura 1 &middot; Patrones, capas y tecnolog&iacute;as Java del lado del servidor</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#capas">Arquitecturas y capas</a></li>
+        <li><a href="#maven-gradle">Maven y Gradle</a></li>
+        <li><a href="#javabean">JavaBean serializable</a></li>
+        <li><a href="#ejb">Enterprise JavaBeans</a></li>
+        <li><a href="#spring-component">Bean de Spring con @Component</a></li>
+        <li><a href="#spring-config">Configuraci&oacute;n de Spring con @Bean</a></li>
+        <li><a href="#jpa">Entidad JPA</a></li>
+        <li><a href="#jsp">Vista JSP</a></li>
+        <li><a href="#jsf">Vista JSF</a></li>
+        <li><a href="#servlet">Servlet</a></li>
+        <li><a href="#pojo">POJO</a></li>
+        <li><a href="#comercio">Arquitectura de ejemplo</a></li>
+      </ol>
+      <p><a href="index_m2l2.html">Lectura 2</a> &middot; <a href="index_m2l3.html">Lectura 3</a> &middot; <a href="index_m2l4.html">Lectura 4</a></p>
+    </nav>
+    <main id="contenido">
+      <section id="capas">
+        <h2><span class="number">01</span>Arquitecturas y capas</h2>
+        <p>La lectura compara arquitectura monol&iacute;tica, arquitectura en capas, MVC, microservicios y arquitectura n-capas. Sus figuras son diagramas, no ejemplos de c&oacute;digo Java, as&iacute; que se resumen aqu&iacute; las responsabilidades que luego aparecen en los ejemplos.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Capa o componente</th><th scope="col">Responsabilidad</th><th scope="col">Tecnolog&iacute;as mencionadas</th></tr></thead>
+            <tbody>
+              <tr><td>Presentaci&oacute;n / vista</td><td>Presentar datos y captar entradas del usuario.</td><td>Thymeleaf, JSP, JSF, HTML</td></tr>
+              <tr><td>Controlador</td><td>Recibir solicitudes y coordinar la respuesta.</td><td>Spring MVC, Spring Boot</td></tr>
+              <tr><td>Servicio</td><td>Aplicar reglas de negocio y coordinar operaciones.</td><td>Spring Services</td></tr>
+              <tr><td>Dominio</td><td>Representar entidades y reglas del negocio.</td><td>POJO, JPA</td></tr>
+              <tr><td>Repositorio / persistencia</td><td>Abstraer operaciones CRUD sobre los datos.</td><td>Spring Data JPA, Hibernate</td></tr>
+              <tr><td>Datos</td><td>Almacenar y recuperar informaci&oacute;n.</td><td>MySQL, PostgreSQL, Oracle</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">En una arquitectura en capas, la presentaci&oacute;n delega al servicio, que usa repositorio para persistir. El flujo de regreso devuelve el resultado al usuario.</p>
+      </section>
+      <section id="maven-gradle">
+        <h2><span class="number">02</span>Maven y Gradle</h2>
+        <p>Ambas herramientas automatizan compilaci&oacute;n, dependencias, pruebas y empaquetado. La lectura muestra c&oacute;mo declarar una dependencia en cada una.</p>
+        <h3>Maven: fragmento de pom.xml</h3>
+        <pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-core&lt;/artifactId&gt;
+  &lt;version&gt;5.3.8&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+        <h3>Gradle: build.gradle (Groovy DSL)</h3>
+        <pre><code>dependencies {
+    implementation 'org.springframework:spring-core:5.3.8'
+}</code></pre>
+        <p class="note">Podria mencionarse Kotlin DSL, sin incluir un ejemplo de configuraci&oacute;n Kotlin.</p>
+      </section>
+      <section id="javabean">
+        <h2><span class="number">03</span>JavaBean serializable</h2>
+        <p>El ejemplo de la lectura declara <code>Persona</code> con constructor sin argumentos, propiedad privada y accesores. Aqu&iacute; se reordena e indenta para poder leerlo; se incluye la clase completa.</p>
+        <pre><code>import java.io.Serializable;
+
+public class Persona implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String nombre;
+
+    public Persona() {
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+}</code></pre>
+        <p class="note">Se describe el constructor p&uacute;blico sin argumentos como una convenci&oacute;n de JavaBean y <code>Serializable</code> como parte de sus caracter&iacute;sticas. Los POJOs no est&aacute;n obligados a implementar esta interfaz.</p>
+      </section>
+      <section id="ejb">
+        <h2><span class="number">04</span>Enterprise JavaBeans</h2>
+        <p>Un EJB se ejecuta en un contenedor Jakarta EE, que puede gestionar transacciones, seguridad, concurrencia y ciclo de vida.</p>
+        <h3>Session bean sin estado citado</h3>
+        <pre><code>import jakarta.ejb.Stateless;
+
+@Stateless
+public class ServicioPersonaBean implements ServicioPersonaLocal {
+    public Persona obtenerPersonaPorId(Long id) {
+        // Implementaci&oacute;n para obtener una persona por ID.
+        return null;
+    }
+
+    public void crearPersona(Persona persona) {
+        // Implementaci&oacute;n para crear una nueva persona.
+    }
+}</code></pre>
+        <p class="note">Se utiliza el paquete antiguo <code>javax.ejb.Stateless</code>. Se muestra el paquete actual <code>jakarta.ejb.Stateless</code>; en un proyecto Java EE anterior a Jakarta EE 9, corresponde usar <code>javax.ejb</code>. Para compilar hacen falta la interfaz <code>ServicioPersonaLocal</code>, la clase <code>Persona</code> y una API/implementaci&oacute;n EJB.</p>
+      </section>
+      <section id="spring-component">
+        <h2><span class="number">05</span>Bean de Spring con @Component</h2>
+        <p>Spring detecta esta clase durante el escaneo de componentes y administra su instancia como bean.</p>
+        <pre><code>import org.springframework.stereotype.Component;
+
+@Component
+public class Persona {
+    private String nombre;
+    private int edad;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getEdad() {
+        return edad;
+    }
+
+    public void setEdad(int edad) {
+        this.edad = edad;
+    }
+}</code></pre>
+        <p class="note">Requiere Spring Context y una configuraci&oacute;n que habilite el escaneo de componentes, por ejemplo Spring Boot.</p>
+      </section>
+      <section id="spring-config">
+        <h2><span class="number">06</span>Configuraci&oacute;n de Spring con @Bean</h2>
+        <p>La anotaci&oacute;n <code>@Bean</code> registra como bean el objeto que devuelve el m&eacute;todo.</p>
+        <pre><code>import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ConfiguracionApp {
+    @Bean
+    public Persona persona() {
+        Persona persona = new Persona();
+        persona.setNombre("Carlos");
+        persona.setEdad(40);
+        return persona;
+    }
+}</code></pre>
+        <p class="note">Este ejemplo presupone la clase <code>Persona</code> de la secci&oacute;n anterior y las dependencias de Spring Context.</p>
+      </section>
+      <section id="jpa">
+        <h2><span class="number">07</span>Entidad JPA</h2>
+        <p>Las entidades JPA representan datos persistidos. El ejemplo de la lectura se presenta con imports y constructores para mostrar una clase completa.</p>
+        <pre><code>import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class Persona {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+    private int edad;
+
+    public Persona() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getEdad() {
+        return edad;
+    }
+
+    public void setEdad(int edad) {
+        this.edad = edad;
+    }
+}</code></pre>
+        <p class="note">El fragmento original usa anotaciones sin imports. Aqu&iacute; se usan los paquetes <code>jakarta.persistence</code>; proyectos JPA anteriores a Jakarta EE 9 pueden usar <code>javax.persistence</code>. Una entidad JPA no necesita implementar <code>Serializable</code> por defecto.</p>
+      </section>
+      <section id="jsp">
+        <h2><span class="number">08</span>Vista JSP</h2>
+        <p>El controlador prepara una lista de usuarios, la asigna a la solicitud y la reenv&iacute;a a la vista JSP para generar la tabla.</p>
+        <h3>Usuario.java</h3>
+        <pre><code>package com.comercioglobal.modelo;
+
+    public class Usuario {
+      private String nombre;
+      private String correo;
+
+      public Usuario(String nombre, String correo) {
+        this.nombre = nombre;
+        this.correo = correo;
+      }
+
+      public String getNombre() {
+        return nombre;
+      }
+
+      public String getCorreo() {
+        return correo;
+      }
+    }</code></pre>
+        <h3>UsuarioController.java</h3>
+        <pre><code>package com.comercioglobal.controlador;
+
+    import com.comercioglobal.modelo.Usuario;
+    import jakarta.servlet.ServletException;
+    import jakarta.servlet.annotation.WebServlet;
+    import jakarta.servlet.http.HttpServlet;
+    import jakarta.servlet.http.HttpServletRequest;
+    import jakarta.servlet.http.HttpServletResponse;
+    import java.io.IOException;
+    import java.util.Arrays;
+    import java.util.List;
+
+    @WebServlet("/usuarios")
+    public class UsuarioController extends HttpServlet {
+      @Override
+      protected void doGet(
+          HttpServletRequest request,
+          HttpServletResponse response
+      ) throws ServletException, IOException {
+        List&lt;Usuario&gt; usuarios = Arrays.asList(
+          new Usuario("Ana P&eacute;rez", "ana@example.com"),
+          new Usuario("Luis G&oacute;mez", "luis@example.com")
+        );
+
+        request.setAttribute("usuarios", usuarios);
+        request.getRequestDispatcher("/usuarios.jsp")
+             .forward(request, response);
+      }
+    }</code></pre>
+        <h3>usuarios.jsp</h3>
+        <pre><code>&lt;%@ page import="java.util.List" %&gt;
+    &lt;%@ page import="com.comercioglobal.modelo.Usuario" %&gt;
+    &lt;%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Lista de Usuarios&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Lista de Usuarios&lt;/h1&gt;
+    &lt;table border="1"&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Nombre&lt;/th&gt;
+            &lt;th&gt;Correo Electr&oacute;nico&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;%
+            List&lt;Usuario&gt; usuarios =
+                (List&lt;Usuario&gt;) request.getAttribute("usuarios");
+          if (usuarios != null) {
+            for (Usuario usuario : usuarios) {
+        %&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;%= usuario.getNombre() %&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;%= usuario.getCorreo() %&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;%
+            }
+          }
+        %&gt;
+    &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p class="note">La vista es HTML5 generado por JSP. El controlador usa datos de muestra; en la aplicaci&oacute;n real, se obtendr&iacute;an desde un servicio o repositorio. El ejemplo requiere un contenedor Jakarta Servlet/JSP y sus dependencias; en aplicaciones anteriores a Jakarta EE 9, los imports <code>jakarta.servlet</code> se reemplazan por <code>javax.servlet</code>. Para datos no confiables, conviene escapar los valores al mostrarlos.</p>
+      </section>
+      <section id="jsf">
+        <h2><span class="number">09</span>Vista JSF</h2>
+        <p>La lectura muestra una vista XHTML con una tabla enlazada a la propiedad <code>usuarios</code> de un bean administrado.</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"&gt;
+&lt;h:head&gt;
+    &lt;title&gt;Lista de Usuarios&lt;/title&gt;
+&lt;/h:head&gt;
+&lt;h:body&gt;
+    &lt;h1&gt;Lista de Usuarios&lt;/h1&gt;
+    &lt;h:dataTable value="#{usuarioBean.usuarios}" var="usuario"&gt;
+        &lt;h:column&gt;
+            &lt;f:facet name="header"&gt;Nombre&lt;/f:facet&gt;
+            &lt;h:outputText value="#{usuario.nombre}" /&gt;
+        &lt;/h:column&gt;
+        &lt;h:column&gt;
+            &lt;f:facet name="header"&gt;Correo Electr&oacute;nico&lt;/f:facet&gt;
+            &lt;h:outputText value="#{usuario.correo}" /&gt;
+        &lt;/h:column&gt;
+    &lt;/h:dataTable&gt;
+&lt;/h:body&gt;
+&lt;/html&gt;</code></pre>
+        <p class="note">Requiere una aplicaci&oacute;n Jakarta Faces y un bean <code>usuarioBean</code> con la propiedad <code>usuarios</code>.</p>
+      </section>
+      <section id="servlet">
+        <h2><span class="number">10</span>Servlet</h2>
+        <p>La lectura advierte expl&iacute;citamente que el ejemplo no est&aacute; completo ni compila; sirve para mostrar el formato de una clase Servlet.</p>
+        <pre><code>import jakarta.servlet.http.HttpServlet;
+
+public class MyServlet extends HttpServlet {
+    // L&oacute;gica del servlet no incluida en el material.
+}</code></pre>
+        <p class="note">Para implementar una respuesta HTTP se deben sobrescribir m&eacute;todos como <code>doGet</code> o <code>doPost</code> y configurar el mapeo. En Servlet anteriores a Jakarta EE 9, el import usa <code>javax.servlet.http.HttpServlet</code>.</p>
+      </section>
+      <section id="pojo">
+        <h2><span class="number">11</span>POJO</h2>
+        <p>El c&oacute;digo de la lectura presenta una clase Java sencilla, sin heredar de un framework. Se reconstruye el m&eacute;todo getter que se hab&iacute;a dividido entre dos fragmentos.</p>
+        <pre><code>public class Persona {
+    private String nombre;
+    private int edad;
+
+    public Persona(String nombre, int edad) {
+        this.nombre = nombre;
+        this.edad = edad;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getEdad() {
+        return edad;
+    }
+
+    public void setEdad(int edad) {
+        this.edad = edad;
+    }
+}</code></pre>
+        <h3>Ejemplo de clase ligada a un framework</h3>
+        <pre><code>import jakarta.servlet.http.HttpServlet;
+
+public class MyServlet extends HttpServlet {
+    // Esta clase depende de la API Servlet.
+}</code></pre>
+        <p class="note">El ejemplo de Servlet no es un POJO independiente porque extiende una clase de la API Servlet. El POJO no est&aacute; obligado a implementar <code>Serializable</code> ni a seguir el contrato JavaBean.</p>
+      </section>
+      <section id="comercio">
+        <h2><span class="number">12</span>Arquitectura de ejemplo</h2>
+        <p>Se describe un flujo de creaci&oacute;n de productos y pedidos con Spring Boot y MySQL, pero no incluye c&oacute;digo Java concreto. El recorrido del caso queda resumido as&iacute;:</p>
+        <figure class="architecture" aria-labelledby="architecture-caption">
+          <figcaption id="architecture-caption">Productos y pedidos: arquitectura en capas</figcaption>
+          <ol class="architecture-flow">
+            <li>
+              <div class="architecture-node view">
+                <h3>Vista <small>Thymeleaf &middot; HTML en el navegador</small></h3>
+                <p>Presenta formularios y muestra productos y pedidos.</p>
+              </div>
+              <div class="architecture-connector"><span aria-hidden="true">&varr;</span>Solicitud HTTP / respuesta HTML o redirecci&oacute;n</div>
+            </li>
+            <li>
+              <div class="architecture-node">
+                <h3>Controlador <small>Spring MVC &middot; Spring Boot</small></h3>
+                <p>Recibe la solicitud y prepara el modelo para la vista.</p>
+              </div>
+              <div class="architecture-connector"><span aria-hidden="true">&varr;</span>Operaci&oacute;n / resultado</div>
+            </li>
+            <li>
+              <div class="architecture-node">
+                <h3>Servicio <small>Spring Services &middot; Spring Boot</small></h3>
+                <p>Valida productos y pedidos y aplica las reglas de negocio.</p>
+              </div>
+              <div class="architecture-connector"><span aria-hidden="true">&varr;</span>Entidades de dominio: Producto y Pedido</div>
+            </li>
+            <li>
+              <div class="architecture-node">
+                <h3>Repositorio <small>Spring Data JPA &middot; Hibernate</small></h3>
+                <p>Consulta y guarda entidades JPA mediante operaciones CRUD.</p>
+              </div>
+              <div class="architecture-connector"><span aria-hidden="true">&varr;</span>SQL / datos persistidos</div>
+            </li>
+            <li>
+              <div class="architecture-node data">
+                <h3>Base de datos <small>MySQL</small></h3>
+                <p>Almacena los productos, los pedidos y sus relaciones.</p>
+              </div>
+            </li>
+          </ol>
+          <p class="note">La solicitud desciende por las capas; el resultado regresa hacia la vista. Las entidades de dominio representan los datos que intercambian el servicio y el repositorio.</p>
+        </figure>
+        <ol>
+          <li>La vista Thymeleaf presenta el formulario del producto.</li>
+          <li>El controlador Spring MVC recibe la solicitud.</li>
+          <li>El servicio valida y aplica la l&oacute;gica de negocio.</li>
+          <li>El repositorio Spring Data JPA realiza la operaci&oacute;n CRUD.</li>
+          <li>La entidad de dominio se persiste en MySQL.</li>
+          <li>El controlador devuelve o redirige a la vista con los datos actualizados.</li>
+        </ol>
+        <p class="note">No se inventa un proyecto ejecutable: faltar&iacute;an la configuraci&oacute;n de Spring Boot/MySQL, las entidades, repositorios, controladores y plantillas.</p>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer><a href="index_m2l2.html">Lectura 2</a> &middot; <a href="index_m2l3.html">Lectura 3</a> &middot; <a href="index_m2l4.html">Lectura 4</a>.</footer>
+</body>
+</html>

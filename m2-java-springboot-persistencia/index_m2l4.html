@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL y Spring Data JPA</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; overflow-wrap: anywhere; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 4; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .table-wrap { overflow: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    figure { margin: 18px 0; }
+    figure img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); }
+    figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>SQL y Spring Data JPA</h1>
+    <p>Lectura 4 &middot; Lenguaje SQL, repositorios y persistencia de productos</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#ddl">SQL DDL: estructura y tablas</a></li>
+        <li><a href="#dml">SQL DML: consultar y modificar datos</a></li>
+        <li><a href="#dcl">SQL DCL: permisos</a></li>
+        <li><a href="#crud">Repositorio Spring Data JPA y CRUD</a></li>
+        <li><a href="#paging">Spring Data JPA: paginaci&oacute;n y ordenaci&oacute;n</a></li>
+        <li><a href="#queries">Spring Data JPA: consultas personalizadas</a></li>
+        <li><a href="#mvp">MVP Empresa Global</a></li>
+        <li><a href="#dependencies">MVP: dependencias y aplicaci&oacute;n</a></li>
+        <li><a href="#properties">MVP: conexi&oacute;n MySQL</a></li>
+        <li><a href="#product">MVP: entidad Producto</a></li>
+        <li><a href="#repository">MVP: repositorio de productos</a></li>
+        <li><a href="#service">MVP: servicio de productos</a></li>
+        <li><a href="#controller">MVP: controlador de productos</a></li>
+        <li><a href="#views">MVP: vistas Thymeleaf</a></li>
+        <li><a href="#codigo-mvp">MVP: c&oacute;digo de proyecto</a></li>
+      </ol>
+      <p><a href="index_m2l1.html">Lectura 1</a> &middot; <a href="index_m2l2.html">Lectura 2</a> &middot; <a href="index_m2l3.html">Lectura 3</a></p>
+    </nav>
+    <main id="contenido">
+      <section id="ddl">
+        <h2><span class="number">01</span>SQL DDL: estructura y tablas</h2>
+        <p>DDL (Data Definition Language o Lenguage de Definición de Datos) define y modifica la estructura de la base de datos: tablas, columnas, restricciones, índices y vistas.</p>
+        <h3>CREATE TABLE</h3>
+        <pre><code>CREATE TABLE Producto (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(120) NOT NULL,
+    precio DECIMAL(10, 2) NOT NULL
+);</code></pre>
+        <h3>ALTER TABLE</h3>
+        <pre><code>ALTER TABLE Producto
+ADD COLUMN descripcion TEXT;</code></pre>
+        <h3>CREATE INDEX</h3>
+        <pre><code>CREATE INDEX idx_producto_nombre
+ON Producto (nombre);</code></pre>
+        <h3>CREATE VIEW</h3>
+        <pre><code>CREATE VIEW productos_catalogo AS
+SELECT id, nombre, precio
+FROM Producto;</code></pre>
+        <h3>DROP TABLE</h3>
+        <pre><code>DROP TABLE Producto;</code></pre>
+        <p class="note"><code>DROP TABLE</code> elimina la tabla y sus datos; usarlo con precauci&oacute;n.</p>
+      </section>
+      <section id="dml">
+        <h2><span class="number">02</span>SQL DML: consultar y modificar datos</h2>
+        <p>DML (Data Manipulation Language o Lenguaje de Manipulación de Datos) consulta e inserta, actualiza o elimina registros. La lectura da las formas generales; los ejemplos se completan usando la tabla <code>Producto</code> de la secci&oacute;n anterior. También existe la clasificación DQL (Data Query Language o Lenguaje de Consulta de Datos) para solo lecturas o consultas en objetos de bases de datos.</p>
+        <h3>SELECT</h3>
+        <pre><code>SELECT nombre, precio
+FROM Producto
+WHERE precio &gt; 0
+ORDER BY nombre ASC;</code></pre>
+        <h3>INSERT INTO</h3>
+        <pre><code>INSERT INTO Producto (nombre, precio)
+VALUES ('Teclado', 25000.00);</code></pre>
+        <h3>UPDATE</h3>
+        <pre><code>UPDATE Producto
+SET precio = 27500.00
+WHERE id = 1;</code></pre>
+        <h3>DELETE</h3>
+        <pre><code>DELETE FROM Producto
+WHERE id = 1;</code></pre>
+        <p class="note">Las sentencias <code>UPDATE</code> y <code>DELETE</code> llevan una condici&oacute;n <code>WHERE</code> para afectar solo los registros previstos.</p>
+        <h3>Transacci&oacute;n</h3>
+        <pre><code>START TRANSACTION;
+
+UPDATE Producto
+SET precio = 27500.00
+WHERE id = 1;
+
+COMMIT;
+-- Ante un error, cancelar con: ROLLBACK;</code></pre>
+      </section>
+      <section id="dcl">
+        <h2><span class="number">03</span>SQL DCL: permisos</h2>
+        <p>DCL (Data Control Language o Lenguaje de Control de Datos) administra los privilegios que tienen los usuarios sobre los objetos de la base de datos.</p>
+        <h3>GRANT</h3>
+        <pre><code>GRANT SELECT, INSERT, UPDATE
+ON demo_springJPA.Producto
+TO 'app_user'@'localhost';</code></pre>
+        <h3>REVOKE</h3>
+        <pre><code>REVOKE UPDATE
+ON demo_springJPA.Producto
+FROM 'app_user'@'localhost';</code></pre>
+        <p class="note">La sintaxis para crear usuarios y otorgar privilegios puede variar entre DBMS.</p>
+      </section>
+      <section id="crud">
+        <h2><span class="number">04</span>Repositorio Spring Data JPA y CRUD</h2>
+        <p>Al extender <code>JpaRepository</code>, Spring Data JPA proporciona operaciones comunes sin implementar SQL manualmente.</p>
+        <h3>Entidad de ejemplo</h3>
+        <pre><code>import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+
+    protected Usuario() {
+    }
+
+    public Usuario(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public Long getId() { return id; }
+    public String getNombre() { return nombre; }
+}</code></pre>
+        <h3>Interfaz de repositorio</h3>
+        <pre><code>import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UsuarioRepositorio
+        extends JpaRepository&lt;Usuario, Long&gt; {
+}</code></pre>
+        <h3>Operaciones b&aacute;sicas</h3>
+        <pre><code>Usuario guardado = usuarioRepositorio.save(new Usuario("Juan"));
+
+Optional&lt;Usuario&gt; encontrado =
+        usuarioRepositorio.findById(guardado.getId());
+
+List&lt;Usuario&gt; usuarios = usuarioRepositorio.findAll();
+long cantidad = usuarioRepositorio.count();
+
+usuarioRepositorio.deleteById(guardado.getId());</code></pre>
+        <p class="note">Los fragmentos CRUD son una demostraci&oacute;n de uso; deben ejecutarse desde un componente Spring que reciba <code>UsuarioRepositorio</code> por inyecci&oacute;n.</p>
+      </section>
+      <section id="paging">
+        <h2><span class="number">05</span>Spring Data JPA: paginaci&oacute;n y ordenaci&oacute;n</h2>
+        <h3>Primera p&aacute;gina, diez usuarios</h3>
+        <pre><code>import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+Page&lt;Usuario&gt; pagina = usuarioRepositorio.findAll(
+        PageRequest.of(0, 10)
+);</code></pre>
+        <h3>Orden ascendente por nombre</h3>
+        <pre><code>import org.springframework.data.domain.Sort;
+
+List&lt;Usuario&gt; usuariosOrdenados = usuarioRepositorio.findAll(
+        Sort.by(Sort.Direction.ASC, "nombre")
+);</code></pre>
+        <p class="note">Los &iacute;ndices de p&aacute;gina empiezan en 0. Diez registros por p&aacute;gina y orden ascendente por nombre.</p>
+      </section>
+      <section id="queries">
+        <h2><span class="number">06</span>Spring Data JPA: consultas personalizadas</h2>
+        <h3>Consulta JPQL con @Query</h3>
+        <pre><code>import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface UsuarioRepositorio
+        extends JpaRepository&lt;Usuario, Long&gt; {
+    @Query("SELECT u FROM Usuario u WHERE u.nombre = :nombre")
+    List&lt;Usuario&gt; findByNombre(@Param("nombre") String nombre);
+}</code></pre>
+        <h3>Consultas derivadas del nombre del m&eacute;todo</h3>
+        <pre><code>List&lt;Usuario&gt; findByNombre(String nombre);
+
+List&lt;Usuario&gt; findByNombreContaining(String nombreParte);</code></pre>
+        <p>El primer m&eacute;todo busca una coincidencia exacta; el segundo busca nombres que contienen el texto indicado.</p>
+      </section>
+      <section id="mvp">
+        <h2><span class="number">07</span>MVP Empresa Global</h2>
+        <p>El MVP gestiona productos en una tienda en l&iacute;nea mediante un formulario, persistencia MySQL y una lista de productos. Se separan modelo, repositorio, servicio, controlador y vistas.</p>
+        <ol>
+          <li>El usuario env&iacute;a el formulario de producto.</li>
+          <li>El controlador recibe los datos y delega la l&oacute;gica al servicio.</li>
+          <li>El servicio usa el repositorio para guardar o recuperar entidades.</li>
+          <li>Thymeleaf presenta la lista o el formulario con los datos del modelo.</li>
+        </ol>
+      </section>
+      <section id="dependencies">
+        <h2><span class="number">08</span>MVP: dependencias y aplicaci&oacute;n</h2>
+        <p>El proyecto necesita Spring Web, Thymeleaf, Spring Data JPA y el controlador JDBC de MySQL.</p>
+        <h3>Dependencias Maven (pom.xml)</h3>
+        <pre><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.mysql&lt;/groupId&gt;
+        &lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+        <h3>Clase de entrada</h3>
+        <pre><code>package com.ecommerce;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoSpringJPAApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DemoSpringJPAApplication.class, args);
+    }
+}</code></pre>
+        <p class="note">Los nombres Maven del driver MySQL pueden variar según la versión del Spring Boot Initializr seleccionada.</p>
+      </section>
+      <section id="properties">
+        <h2><span class="number">09</span>MVP: conexi&oacute;n MySQL</h2>
+        <p>Ubicaci&oacute;n: <code>src/main/resources/application.properties</code>. Sustituye las variables de entorno por las credenciales configuradas en tu entorno.</p>
+        <pre><code>spring.datasource.url=jdbc:mysql://localhost:3306/demo_springJPA
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true</code></pre>
+        <p class="note">La opci&oacute;n <code>update</code> permite a Hibernate ajustar el esquema a las entidades. En producci&oacute;n conviene gestionar cambios de esquema con migraciones.</p>
+      </section>
+      <section id="product">
+        <h2><span class="number">10</span>MVP: entidad Producto</h2>
+        <p>La entidad representa la tabla de productos. La lectura describe los campos <code>id</code>, <code>nombre</code>, <code>precio</code> y <code>descripcion</code>.</p>
+        <pre><code>package com.ecommerce.productos;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import java.math.BigDecimal;
+
+@Entity
+public class Producto {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nombre;
+    private BigDecimal precio;
+    private String descripcion;
+
+    public Producto() {
+    }
+
+    public Producto(String nombre, BigDecimal precio, String descripcion) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.descripcion = descripcion;
+    }
+
+    public Long getId() { return id; }
+    public String getNombre() { return nombre; }
+    public BigDecimal getPrecio() { return precio; }
+    public String getDescripcion() { return descripcion; }
+
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setPrecio(BigDecimal precio) { this.precio = precio; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+}</code></pre>
+      </section>
+      <section id="repository">
+        <h2><span class="number">11</span>MVP: repositorio de productos</h2>
+        <p>La interfaz hereda las operaciones CRUD de Spring Data JPA sin requerir una implementación manual.</p>
+        <pre><code>package com.ecommerce.productos;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProductoRepositorio
+        extends JpaRepository&lt;Producto, Long&gt; {
+}</code></pre>
+      </section>
+      <section id="service">
+        <h2><span class="number">12</span>MVP: servicio de productos</h2>
+        <p>El servicio concentra la lógica de negocio y delega la persistencia al repositorio.</p>
+        <pre><code>package com.ecommerce.productos;
+
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class ProductoServicio {
+    private final ProductoRepositorio repositorio;
+
+    public ProductoServicio(ProductoRepositorio repositorio) {
+        this.repositorio = repositorio;
+    }
+
+    @Transactional(readOnly = true)
+    public List&lt;Producto&gt; listarProductos() {
+        return repositorio.findAll();
+    }
+
+    public Producto guardarProducto(Producto producto) {
+        return repositorio.save(producto);
+    }
+}</code></pre>
+      </section>
+      <section id="controller">
+        <h2><span class="number">13</span>MVP: controlador de productos</h2>
+        <p>El controlador entrega la lista de productos, muestra el formulario y procesa su env&iacute;o.</p>
+        <pre><code>package com.ecommerce.productos;
+
+import java.math.BigDecimal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/productos")
+public class ProductoControlador {
+    private final ProductoServicio servicio;
+
+    public ProductoControlador(ProductoServicio servicio) {
+        this.servicio = servicio;
+    }
+
+    @GetMapping
+    public String listarProductos(Model modelo) {
+        modelo.addAttribute("productos", servicio.listarProductos());
+        return "productos/lista";
+    }
+
+    @GetMapping("/nuevo")
+    public String mostrarFormulario(Model modelo) {
+        modelo.addAttribute("producto", new Producto("", BigDecimal.ZERO, ""));
+        return "productos/formulario";
+    }
+
+    @PostMapping
+    public String guardarProducto(@ModelAttribute Producto producto) {
+        servicio.guardarProducto(producto);
+        return "redirect:/productos";
+    }
+}</code></pre>
+      </section>
+      <section id="views">
+        <h2><span class="number">14</span>MVP: vistas Thymeleaf</h2>
+        <h3>src/main/resources/templates/productos/formulario.html</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Nuevo producto&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Agregar producto&lt;/h1&gt;
+    &lt;form th:action="@{/productos}" th:object="${producto}" method="post"&gt;
+        &lt;label for="nombre"&gt;Nombre&lt;/label&gt;
+        &lt;input id="nombre" type="text" th:field="*{nombre}" required&gt;
+        &lt;label for="precio"&gt;Precio&lt;/label&gt;
+        &lt;input id="precio" type="number" step="0.01" th:field="*{precio}" required&gt;
+        &lt;label for="descripcion"&gt;Descripci&oacute;n&lt;/label&gt;
+        &lt;textarea id="descripcion" th:field="*{descripcion}"&gt;&lt;/textarea&gt;
+        &lt;button type="submit"&gt;Guardar&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>src/main/resources/templates/productos/lista.html</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Productos&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Productos&lt;/h1&gt;
+    &lt;a th:href="@{/productos/nuevo}"&gt;Agregar producto&lt;/a&gt;
+    &lt;table&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;&lt;th&gt;Nombre&lt;/th&gt;&lt;th&gt;Precio&lt;/th&gt;&lt;th&gt;Descripci&oacute;n&lt;/th&gt;&lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            &lt;tr th:each="producto : ${productos}"&gt;
+                &lt;td th:text="${producto.nombre}"&gt;&lt;/td&gt;
+                &lt;td th:text="${producto.precio}"&gt;&lt;/td&gt;
+                &lt;td th:text="${producto.descripcion}"&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+      <section id="codigo-mvp">
+        <h2><span class="number">15</span>MVP: c&oacute;digo de proyecto</h2>
+        <p>El c&oacute;digo del MVP se presenta en las secciones de <a href="#dependencies">dependencias y aplicaci&oacute;n</a>, <a href="#properties">conexi&oacute;n MySQL</a>, <a href="#product">entidad Producto</a>, <a href="#repository">repositorio</a>, <a href="#service">servicio</a>, <a href="#controller">controlador</a> y <a href="#views">vistas Thymeleaf</a>.</p>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer><a href="index_m2l1.html">Lectura 1</a> &middot; <a href="index_m2l2.html">Lectura 2</a> &middot; <a href="index_m2l3.html">Lectura 3</a>.</footer>
+</body>
+</html>

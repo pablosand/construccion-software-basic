@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aplicaciones con Spring Boot</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 4; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .initializr-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 16px 0; }
+    .initializr-figure { min-width: 0; margin: 0; border: 1px solid var(--line); background: #fff; }
+    .initializr-figure figcaption { padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 14px; font-weight: 700; }
+    .initializr-figure img { display: block; width: 100%; height: auto; }
+    .initializr-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .initializr-options span { padding: 3px 7px; border: 1px solid var(--line); font-size: 12px; }
+    .initializr-options .selected { border-color: var(--accent); background: #e5f1ec; color: #07523f; font-weight: 700; }
+    .initializr-link { display: inline-block; margin: 4px 0 14px; padding: 10px 14px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700; }
+    .table-wrap { overflow: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; } .initializr-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Aplicaciones con Spring Boot</h1>
+    <p>Lectura 2 &middot; Inyecci&oacute;n de dependencias, vistas y otros ejemplos con Spring MVC</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#thymeleaf">Expresiones Thymeleaf</a></li>
+        <li><a href="#fragmentos">Fragmentos Thymeleaf</a></li>
+        <li><a href="#layouts">Layouts Thymeleaf</a></li>
+        <li><a href="#di">Inyecci&oacute;n de dependencias Spring</a></li>
+        <li><a href="#herramientas">Herramientas Spring</a></li>
+        <li><a href="#boot">Ejemplo Spring Boot: Uso de Initializr</a></li>
+        <li><a href="#controller-view">Ejemplo Spring Boot: controlador y vista</a></li>
+        <li><a href="#mvc">Mapeo de solicitudes Spring MVC</a></li>
+        <li><a href="#service">Servicios Spring y ciclo de vida</a></li>
+        <li><a href="#elemento">Ejemplo Spring Boot: dominio</a></li>
+        <li><a href="#elemento-service">Ejemplo Spring Boot: servicio</a></li>
+        <li><a href="#elemento-controller">Ejemplo Spring Boot: controlador</a></li>
+        <li><a href="#elemento-view">Ejemplo Spring Boot: Thymeleaf</a></li>
+                <li><a href="#codigo-proyecto">Ejemplo: c&oacute;digo de proyecto</a></li>
+      </ol>
+            <p><a href="index_m2l1.html">Lectura 1</a> &middot; <a href="index_m2l3.html">Lectura 3</a> &middot; <a href="index_m2l4.html">Lectura 4</a></p>
+    </nav>
+    <main id="contenido">
+      <section id="thymeleaf">
+        <h2><span class="number">01</span>Expresiones Thymeleaf</h2>
+        <p>Los atributos Thymeleaf conectan los datos preparados por el controlador con la plantilla HTML.</p>
+        <h3>Mostrar un valor con th:text</h3>
+        <pre><code>&lt;p th:text="${mensaje}"&gt;&lt;/p&gt;</code></pre>
+        <h3>Recorrer una colecci&oacute;n con th:each</h3>
+        <pre><code>&lt;ul&gt;
+    &lt;li th:each="item : ${items}" th:text="${item}"&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        <h3>Mostrar contenido condicionalmente</h3>
+        <pre><code>&lt;p th:if="${mostrar}"&gt;
+    Este texto se muestra si 'mostrar' es verdadero.
+&lt;/p&gt;
+&lt;p th:unless="${mostrar}"&gt;
+    Este texto se muestra si 'mostrar' es falso.
+&lt;/p&gt;</code></pre>
+      </section>
+      <section id="fragmentos">
+        <h2><span class="number">02</span>Fragmentos Thymeleaf</h2>
+        <h3>fragmentos.html</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;body&gt;
+    &lt;div th:fragment="encabezado"&gt;
+        &lt;h1&gt;Bienvenido a mi sitio&lt;/h1&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>pagina.html: incluir el fragmento</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;body&gt;
+    &lt;div th:replace="~{fragmentos :: encabezado}"&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p class="note">Se completa el documento de inclusi&oacute;n y se escribe la sintaxis de fragmento como <code>~{plantilla :: fragmento}</code>.</p>
+      </section>
+      <section id="layouts">
+        <h2><span class="number">03</span>Layouts Thymeleaf</h2>
+        <h3>base.html</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;title&gt;Mi Aplicaci&oacute;n&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;&lt;h1&gt;Encabezado&lt;/h1&gt;&lt;/header&gt;
+    &lt;main th:fragment="contenido"&gt;
+        &lt;!-- Contenido espec&iacute;fico de cada p&aacute;gina --&gt;
+    &lt;/main&gt;
+    &lt;footer&gt;&lt;p&gt;Pie de p&aacute;gina&lt;/p&gt;&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <h3>pagina.html: extender el layout</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"&gt;
+&lt;head&gt;
+    &lt;title&gt;P&aacute;gina espec&iacute;fica&lt;/title&gt;
+&lt;/head&gt;
+&lt;body layout:decorate="~{base}"&gt;
+    &lt;div layout:fragment="contenido"&gt;
+        &lt;h2&gt;Contenido espec&iacute;fico de la p&aacute;gina&lt;/h2&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p class="note">El atributo <code>layout:decorate</code> requiere Thymeleaf Layout Dialect, adem&aacute;s de Thymeleaf.</p>
+      </section>
+      <section id="di">
+        <h2><span class="number">04</span>Inyecci&oacute;n de dependencias Spring</h2>
+        <p>El servicio de pedidos depende del servicio de usuarios. Spring puede crear ambos beans y conectar la dependencia.</p>
+        <h3>Configuraci&oacute;n XML citada</h3>
+        <pre><code>&lt;beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         https://www.springframework.org/schema/beans/spring-beans.xsd"&gt;
+    &lt;bean id="servicioUsuario" class="com.ejemplo.ServicioUsuario" /&gt;
+    &lt;bean id="servicioPedido" class="com.ejemplo.ServicioPedido"&gt;
+        &lt;constructor-arg ref="servicioUsuario" /&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;</code></pre>
+        <h3>Configuraci&oacute;n Java con @Configuration y @Bean</h3>
+        <pre><code>import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ConfiguracionApp {
+    @Bean
+    public ServicioUsuario servicioUsuario() {
+        return new ServicioUsuario();
+    }
+
+    @Bean
+    public ServicioPedido servicioPedido(ServicioUsuario servicioUsuario) {
+        return new ServicioPedido(servicioUsuario);
+    }
+}</code></pre>
+      </section>
+      <section id="herramientas">
+        <h2><span class="number">05</span>Herramientas Spring</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Herramienta</th><th scope="col">Uso descrito</th></tr></thead>
+            <tbody>
+              <tr><td>Spring MVC</td><td>Controladores web, rutas, modelo y vistas.</td></tr>
+              <tr><td>Spring Data JPA</td><td>Acceso CRUD a datos y repositorios JPA.</td></tr>
+              <tr><td>Spring Security</td><td>Autenticaci&oacute;n y autorizaci&oacute;n.</td></tr>
+              <tr><td>Spring Boot</td><td>Configuraci&oacute;n autom&aacute;tica y aplicaciones independientes.</td></tr>
+              <tr><td>Spring Cloud</td><td>Herramientas para sistemas basados en microservicios.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">No incluye fragmentos de c&oacute;digo para estas herramientas en esta secci&oacute;n.</p>
+      </section>
+      <section id="boot">
+        <h2><span class="number">06</span>Ejemplo Spring Boot: Uso de Initializr</h2>
+                <p>Spring Initializr genera la estructura inicial y los archivos de construcci&oacute;n de un proyecto Spring Boot. La primera captura muestra las opciones generales y la segunda las dependencias seleccionadas.</p>
+                <h3>Configuraci&oacute;n del proyecto</h3>
+                <div class="initializr-grid">
+                    <figure class="initializr-figure">
+                        <figcaption>Configuraci&oacute;n general del proyecto</figcaption>
+                        <img src="images/initializr_1.png" alt="Spring Initializr configurado con Maven, Java, Spring Boot 4.1.1, JAR, Properties, Java 25, grupo com.example y artefacto demospringboot.">
+                    </figure>
+                    <figure class="initializr-figure">
+                        <figcaption>Dependencias seleccionadas</figcaption>
+                        <img src="images/initializr_2.png" alt="Dependencias Spring Web, Spring Boot DevTools y Thymeleaf seleccionadas en Spring Initializr.">
+                    </figure>
+                </div>
+                <p class="note">Las capturas se muestran desde la carpeta <code>images</code> del m&oacute;dulo.</p>
+                <div class="initializr-options" aria-label="Selecciones del proyecto">
+                    <span class="selected">Maven</span><span class="selected">Java</span><span class="selected">Spring Boot 4.1.1</span><span class="selected">JAR</span><span class="selected">Properties</span><span class="selected">Java 25</span>
+                </div>
+                <h3>Abrir y descargar el proyecto</h3>
+                <p>Este enlace abre Spring Initializr con los valores y dependencias de las capturas precargados:</p>
+                <a class="initializr-link" href="https://start.spring.io/#!type=maven-project&amp;language=java&amp;platformVersion=4.1.1&amp;packaging=jar&amp;configurationFileFormat=properties&amp;jvmVersion=25&amp;groupId=com.example&amp;artifactId=demospringboot&amp;packageName=com.example.demospringboot&amp;dependencies=web,devtools,thymeleaf" target="_blank" rel="noopener noreferrer">Abrir configuración en Spring Initializr</a>
+                <ol>
+                    <li>Revisar los datos del proyecto y la lista de dependencias.</li>
+                    <li>Seleccionar <strong>Generate</strong> para descargar el proyecto como ZIP.</li>
+                    <li>Extraer el ZIP y abrir la carpeta en IntelliJ IDEA u otro IDE compatible con Maven.</li>
+                </ol>
+                <h3>Dependencias Maven: pom.xml</h3>
+                <p>El archivo <code>pom.xml</code> se encuentra en la carpeta ra&iacute;z del proyecto. El bloque <code>&lt;dependencies&gt;</code> va dentro del elemento <code>&lt;project&gt;</code>.</p>
+        <pre><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+        &lt;optional&gt;true&lt;/optional&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+        <p class="note">Spring Initializr genera el POM y el Maven Wrapper con las versiones compatibles para Spring Boot 4.1.1. Este fragmento muestra las tres dependencias seleccionadas en las capturas.</p>
+        <h3>Clase de entrada: DemoSpringBootApplication.java</h3>
+        <p>La clase principal se guarda bajo <code>src/main/java</code>. Como el paquete es <code>com.example.demospringboot</code>, su ruta completa dentro del proyecto es <code>src/main/java/com/example/demospringboot/DemoSpringBootApplication.java</code>.</p>
+        <pre><code>package com.example.demospringboot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoSpringBootApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DemoSpringBootApplication.class, args);
+    }
+}</code></pre>
+        <h3>application.properties: src/main/resources/application.properties</h3>
+        <pre><code>server.port=8080</code></pre>
+        <p class="note">Este archivo configura propiedades de la aplicaci&oacute;n y se guarda en <code>src/main/resources</code>.</p>
+        <h3>Ubicaci&oacute;n de estos archivos</h3>
+        <pre><code>demospringboot/
+├── pom.xml
+└── src/
+    └── main/
+        ├── java/
+        │   └── com/example/demospringboot/
+        │       └── DemoSpringBootApplication.java
+        └── resources/
+            └── application.properties</code></pre>
+        <p class="note">La estructura muestra <code>application.properties</code> dentro de <code>src/main/resources</code>. Los controladores y dem&aacute;s clases Java tambi&eacute;n se ubican bajo <code>src/main/java/com/example/demospringboot</code>, respetando sus subpaquetes.</p>
+      </section>
+      <section id="controller-view">
+        <h2><span class="number">07</span>Ejemplo Spring Boot: controlador y vista</h2>
+        <h3>Controlador.java</h3>
+        <pre><code>package com.example.demospringboot.controladores;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class Controlador {
+    @GetMapping("/")
+    public String info(Model modelo) {
+        modelo.addAttribute("mensaje", "Universidad Siglo 21");
+        return "info";
+    }
+}</code></pre>
+        <h3>src/main/resources/templates/info.html</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Informaci&oacute;n Spring Boot&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 th:text="${mensaje}"&gt;&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>El controlador agrega <code>mensaje</code> al modelo y devuelve el nombre de plantilla <code>info</code>. Thymeleaf muestra ese valor en el encabezado.</p>
+      </section>
+      <section id="mvc">
+        <h2><span class="number">08</span>Mapeo de solicitudes Spring MVC</h2>
+        <p>Estos m&eacute;todos ilustran los mapeos y par&aacute;metros de Spring MVC citados en la lectura. Son ejemplos independientes; las clases de dominio y servicios se representan como tipos ya definidos.</p>
+        <h3>Controlador y GET</h3>
+        <pre><code>import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class ProductoControlador {
+    @RequestMapping(value = "/inicio", method = RequestMethod.GET)
+    public String paginaInicio(Model modelo) {
+        return "inicio";
+    }
+
+    @GetMapping("/usuarios")
+    public String obtenerUsuarios(Model modelo) {
+        // Recuperar usuarios y agregarlos al modelo.
+        return "usuarios";
+    }
+
+    @GetMapping("/buscar")
+    public String buscar(@RequestParam("consulta") String consulta,
+                         Model modelo) {
+        modelo.addAttribute("consulta", consulta);
+        return "resultadosBusqueda";
+    }
+
+    @GetMapping("/articulos/{idArticulo}")
+    public String obtenerArticulo(
+            @PathVariable("idArticulo") Long idArticulo, Model modelo) {
+        // Recuperar el art&iacute;culo por su identificador.
+        return "articulo";
+    }
+}</code></pre>
+        <h3>POST, PUT y formulario</h3>
+        <pre><code>    @PostMapping("/enviar")
+    public String enviarFormulario(
+            @ModelAttribute("datosFormulario") DatosFormulario datosFormulario,
+            Model modelo) {
+        // Procesar los datos del formulario.
+        return "resultado";
+    }
+
+    @PutMapping("/actualizar/{id}")
+    @ResponseBody
+    public String actualizarUsuario(
+            @PathVariable("id") Long id,
+            @RequestBody Usuario usuario) {
+        // Actualizar el usuario.
+        return "actualizado";
+    }
+
+    @PostMapping("/enviarFormulario")
+    public String procesarFormulario(
+            @ModelAttribute("datosFormulario") DatosFormulario datosFormulario) {
+        // Procesar el formulario.
+        return "resultado";
+    }</code></pre>
+        <h3>Respuesta JSON y manejo de excepciones</h3>
+        <pre><code>    @GetMapping("/api/datos")
+    @ResponseBody
+    public Datos obtenerDatos() {
+        return new Datos("ejemplo");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String manejarExcepcionIllegalArgument(
+            IllegalArgumentException excepcion, Model modelo) {
+        modelo.addAttribute("error", excepcion.getMessage());
+        return "error";
+    }
+}</code></pre>
+      </section>
+      <section id="service">
+        <h2><span class="number">09</span>Servicios Spring y ciclo de vida</h2>
+        <h3>Servicio transaccional</h3>
+        <pre><code>import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class ProductoServicio {
+    public void procesarOperacion() {
+        // L&oacute;gica de negocio y operaciones transaccionales.
+    }
+}</code></pre>
+        <h3>Inyecci&oacute;n de servicio en un controlador</h3>
+        <pre><code>@Controller
+public class ProductoControlador {
+    private final ProductoServicio productoServicio;
+
+    public ProductoControlador(ProductoServicio productoServicio) {
+        this.productoServicio = productoServicio;
+    }
+
+    @GetMapping("/productos")
+    public String listarProductos(Model modelo) {
+        modelo.addAttribute("productos",
+                productoServicio.obtenerTodosLosProductos());
+        return "productos";
+    }
+}</code></pre>
+        <h3>Inicializaci&oacute;n y limpieza del bean</h3>
+        <pre><code>import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ServicioInicializable {
+    @PostConstruct
+    public void init() {
+        // Inicializaci&oacute;n despu&eacute;s de crear el bean.
+    }
+
+    @PreDestroy
+    public void cleanup() {
+        // Liberaci&oacute;n de recursos antes de destruir el bean.
+    }
+}</code></pre>
+        <p class="note">La lectura ejemplifica <code>@Autowired</code> en un campo; el constructor muestra inyecci&oacute;n expl&iacute;cita de dependencia. En Spring Framework 6 se usan las anotaciones <code>jakarta.annotation</code>; proyectos anteriores pueden requerir <code>javax.annotation</code>.</p>
+      </section>
+      <section id="elemento">
+        <h2><span class="number">10</span>Ejemplo Spring Boot: dominio</h2>
+        <h3>Elemento.java</h3>
+        <pre><code>package com.example.demospringboot.dominio;
+
+public class Elemento {
+    private String nombre;
+
+    public Elemento(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+}</code></pre>
+      </section>
+      <section id="elemento-service">
+        <h2><span class="number">11</span>Ejemplo Spring Boot: servicio</h2>
+        <h3>ElementoServicio.java</h3>
+        <pre><code>package com.example.demospringboot.servicios;
+
+import com.example.demospringboot.dominio.Elemento;
+import org.springframework.stereotype.Service;
+import java.util.Arrays;
+import java.util.List;
+
+@Service
+public class ElementoServicio {
+    public List&lt;Elemento&gt; obtenerElementos() {
+        return Arrays.asList(
+            new Elemento("Elemento 1"),
+            new Elemento("Elemento 2"),
+            new Elemento("Elemento 3")
+        );
+    }
+}</code></pre>
+      </section>
+      <section id="elemento-controller">
+        <h2><span class="number">12</span>Ejemplo Spring Boot: controlador</h2>
+        <h3>Controlador.java</h3>
+        <pre><code>package com.example.demospringboot.controladores;
+
+import com.example.demospringboot.dominio.Elemento;
+import com.example.demospringboot.servicios.ElementoServicio;
+import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class Controlador {
+    private final ElementoServicio elementoServicio;
+
+    public Controlador(ElementoServicio elementoServicio) {
+        this.elementoServicio = elementoServicio;
+    }
+
+    @GetMapping("/")
+    public String info(Model modelo) {
+        modelo.addAttribute("mensaje", "Demo Spring Boot");
+        List&lt;Elemento&gt; elementos = elementoServicio.obtenerElementos();
+        modelo.addAttribute("elementos", elementos);
+        return "info";
+    }
+}</code></pre>
+      </section>
+      <section id="elemento-view">
+        <h2><span class="number">13</span>Ejemplo Spring Boot: Thymeleaf</h2>
+        <h3>src/main/resources/templates/info.html</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es" xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Informaci&oacute;n Spring Boot&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 th:text="${mensaje}"&gt;&lt;/h1&gt;
+    &lt;h1&gt;Lista de Elementos&lt;/h1&gt;
+    &lt;ul&gt;
+        &lt;li th:each="elemento : ${elementos}"
+            th:text="${elemento.nombre}"&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>El controlador entrega la lista bajo la clave <code>elementos</code>; Thymeleaf crea un elemento de lista para cada objeto y muestra su nombre.</p>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+            <section id="codigo-proyecto">
+                <h2><span class="number">14</span>Ejemplo: c&oacute;digo de proyecto</h2>
+                <p>El c&oacute;digo del ejemplo se presenta en las secciones de <a href="#elemento">dominio</a>, <a href="#elemento-service">servicio</a>, <a href="#elemento-controller">controlador</a> y <a href="#elemento-view">vista Thymeleaf</a>.</p>
+                <a href="#inicio">Volver al inicio</a>
+            </section>
+    </main>
+  </div>
+    <footer><a href="index_m2l1.html">Lectura 1</a> &middot; <a href="index_m2l3.html">Lectura 3</a> &middot; <a href="index_m2l4.html">Lectura 4</a>.</footer>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Persistencia Java y JPA</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 4; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, td code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .table-wrap { overflow: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Persistencia Java y JPA</h1>
+    <p>Lectura 3 &middot; ORM, JDBC, Hibernate y Spring Data JPA</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#orm">ORM y desajuste objeto-relacional</a></li>
+        <li><a href="#acceso">JDBC, JPA e Hibernate</a></li>
+        <li><a href="#entidad">Entidad JPA y tabla</a></li>
+        <li><a href="#identidad">Identificadores JPA</a></li>
+        <li><a href="#campos">Mapeo de campos JPA</a></li>
+        <li><a href="#relaciones">Relaciones JPA entre entidades</a></li>
+        <li><a href="#consultas">Consultas Spring Data JPA</a></li>
+        <li><a href="#listeners">Eventos de entidades JPA</a></li>
+        <li><a href="#embebidos">Objetos embebidos JPA</a></li>
+        <li><a href="#persistencia">Persistencia: repaso</a></li>
+      </ol>
+      <p><a href="index_m2l1.html">Lectura 1</a> &middot; <a href="index_m2l2.html">Lectura 2</a> &middot; <a href="index_m2l4.html">Lectura 4</a></p>
+    </nav>
+    <main id="contenido">
+      <section id="orm">
+        <h2><span class="number">01</span>ORM y desajuste objeto-relacional</h2>
+        <p>ORM relaciona clases y objetos Java con tablas y filas relacionales. La lectura describe desajustes de granularidad, herencia, identidad, asociaciones y navegaci&oacute;n de datos.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Concepto</th><th scope="col">Modelo orientado a objetos</th><th scope="col">Modelo relacional</th></tr></thead>
+            <tbody>
+              <tr><td>Datos</td><td>Objetos, campos y tipos Java</td><td>Filas, columnas y tipos SQL</td></tr>
+              <tr><td>Identidad</td><td>Referencia (<code>==</code>) e igualdad (<code>equals</code>)</td><td>Clave primaria</td></tr>
+              <tr><td>Asociaciones</td><td>Referencias y colecciones</td><td>Claves for&aacute;neas y tablas de uni&oacute;n</td></tr>
+              <tr><td>Herencia</td><td>Clases y subtipos</td><td>No tiene un equivalente universal</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">No incluye un bloque de c&oacute;digo ORM en esta secci&oacute;n.</p>
+      </section>
+      <section id="acceso">
+        <h2><span class="number">02</span>JDBC, JPA e Hibernate</h2>
+        <p>JDBC permite ejecutar SQL directamente desde Java y leer resultados con <code>ResultSet</code>. La lectura describe el proceso, pero no incluye un fragmento JDBC para reproducir.</p>
+        <p>JPA define una especificaci&oacute;n para mapear objetos Java a tablas; Hibernate es una de sus implementaciones. Spring Data JPA agrega repositorios y generaci&oacute;n de consultas sobre JPA.</p>
+        <p class="note">Las secciones siguientes recopilan los ejemplos de anotaciones JPA y Spring Data.</p>
+      </section>
+      <section id="entidad">
+        <h2><span class="number">03</span>Entidad JPA y tabla</h2>
+        <h3>Marcar una clase como entidad</h3>
+        <pre><code>import jakarta.persistence.Entity;
+
+@Entity
+public class Usuario {
+    // Campos y m&eacute;todos de la entidad.
+}</code></pre>
+        <h3>Elegir el nombre de tabla</h3>
+        <pre><code>import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "usuarios")
+public class Usuario {
+    // Campos y m&eacute;todos de la entidad.
+}</code></pre>
+        <p class="note">Para persistir una entidad completa necesita, entre otros elementos, un identificador.</p>
+      </section>
+      <section id="identidad">
+        <h2><span class="number">04</span>Identificadores JPA</h2>
+        <h3>Clave primaria</h3>
+        <pre><code>import jakarta.persistence.Id;
+
+@Id
+private Long id;</code></pre>
+        <h3>Identificador autogenerado</h3>
+        <pre><code>import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;</code></pre>
+      </section>
+      <section id="campos">
+        <h2><span class="number">05</span>Mapeo de campos JPA</h2>
+        <h3>Personalizar una columna</h3>
+        <pre><code>import jakarta.persistence.Column;
+
+@Column(name = "nombre_usuario", nullable = false)
+private String nombre;</code></pre>
+        <h3>Campo de gran tama&ntilde;o</h3>
+        <pre><code>import jakarta.persistence.Lob;
+
+@Lob
+private String descripcion;</code></pre>
+      </section>
+      <section id="relaciones">
+        <h2><span class="number">06</span>Relaciones JPA entre entidades</h2>
+        <h3>Uno a uno</h3>
+        <pre><code>import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+
+@OneToOne
+@JoinColumn(name = "perfil_id")
+private Perfil perfil;</code></pre>
+        <h3>Uno a muchos</h3>
+        <pre><code>import jakarta.persistence.OneToMany;
+import java.util.List;
+
+@OneToMany(mappedBy = "usuario")
+private List&lt;Orden&gt; ordenes;</code></pre>
+        <h3>Muchos a uno</h3>
+        <pre><code>import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@ManyToOne
+@JoinColumn(name = "usuario_id")
+private Usuario usuario;</code></pre>
+        <h3>Muchos a muchos</h3>
+        <pre><code>import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import java.util.Set;
+
+@ManyToMany
+@JoinTable(
+    name = "usuario_rol",
+    joinColumns = @JoinColumn(name = "usuario_id"),
+    inverseJoinColumns = @JoinColumn(name = "rol_id")
+)
+private Set&lt;Rol&gt; roles;</code></pre>
+      </section>
+      <section id="consultas">
+        <h2><span class="number">07</span>Consultas Spring Data JPA</h2>
+        <p>La anotaci&oacute;n <code>@Query</code> permite declarar JPQL en un m&eacute;todo de repositorio. <code>@Param</code> vincula el par&aacute;metro nombrado de la consulta.</p>
+        <pre><code>import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface UsuarioRepositorio
+        extends JpaRepository&lt;Usuario, Long&gt; {
+
+    @Query("SELECT u FROM Usuario u WHERE u.nombre = :nombre")
+    List&lt;Usuario&gt; findByNombre(@Param("nombre") String nombre);
+}</code></pre>
+        <p class="note">La consulta est&aacute; escrita en JPQL y usa el nombre de la entidad y sus propiedades Java, no los nombres de tabla y columna SQL.</p>
+      </section>
+      <section id="listeners">
+        <h2><span class="number">08</span>Eventos de entidades JPA</h2>
+        <p><code>@EntityListeners</code> conecta una entidad con una clase que escucha eventos de persistencia.</p>
+        <h3>Entidad</h3>
+        <pre><code>import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
+
+@Entity
+@EntityListeners(UsuarioAuditoria.class)
+public class Usuario {
+    @Id
+    private Long id;
+    private String nombre;
+}</code></pre>
+        <h3>Listener</h3>
+        <pre><code>import jakarta.persistence.PrePersist;
+
+public class UsuarioAuditoria {
+    @PrePersist
+    public void antesDePersistir(Usuario usuario) {
+        // Preparar o validar la entidad antes de guardarla.
+    }
+}</code></pre>
+      </section>
+      <section id="embebidos">
+        <h2><span class="number">09</span>Objetos embebidos JPA</h2>
+        <h3>Clase de valor con @Embeddable</h3>
+        <pre><code>import jakarta.persistence.Embeddable;
+
+@Embeddable
+public class Direccion {
+    private String calle;
+    private String ciudad;
+
+    protected Direccion() {
+    }
+
+    public Direccion(String calle, String ciudad) {
+        this.calle = calle;
+        this.ciudad = ciudad;
+    }
+
+    public String getCalle() {
+        return calle;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+}</code></pre>
+        <h3>Incluirla con @Embedded</h3>
+        <pre><code>import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
+public class Usuario {
+    @Id
+    private Long id;
+
+    @Embedded
+    private Direccion direccion;
+}</code></pre>
+        <p class="note">Los campos de <code>Direccion</code> se guardan como columnas de la tabla de la entidad contenedora, salvo que se personalice el mapeo.</p>
+      </section>
+      <section id="persistencia">
+        <h2><span class="number">10</span>Persistencia: repaso</h2>
+        <p>La persistencia conserva datos m&aacute;s all&aacute; de la ejecuci&oacute;n de la aplicaci&oacute;n y permite recuperarlos en ejecuciones futuras.</p>
+        <p>La lectura describe JDBC, JPA, Hibernate y Spring Data JPA, pero no presenta un bloque de c&oacute;digo JDBC ni un proyecto ejecutable completo.</p>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer><a href="index_m2l1.html">Lectura 1</a> &middot; <a href="index_m2l2.html">Lectura 2</a> &middot; <a href="index_m2l4.html">Lectura 4</a>.</footer>
+</body>
+</html>

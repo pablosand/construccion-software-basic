@@ -41,6 +41,18 @@
     figure { margin: 18px 0; }
     figure img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); }
     figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+    .mvp-diagram figcaption { margin: 0 0 14px; color: var(--ink); font-size: 15px; font-weight: 700; }
+    .mvp-flow { list-style: none; margin: 0; padding: 0; }
+    .mvp-server { padding: 14px 0 0; border-top: 2px dashed var(--accent); border-bottom: 2px dashed var(--accent); }
+    .mvp-server > h3 { margin: 0 0 12px; font-size: 16px; }
+    .mvp-node { padding: 14px 18px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 4px; background: #fff; }
+    .mvp-node h3 { margin: 0 0 4px; font-size: 16px; }
+    .mvp-node p { margin: 0; font-size: 14px; }
+    .mvp-node.client { border-left-color: #296fa3; background: #edf5fb; }
+    .mvp-node.database { border-left-color: #a64b25; background: #fff3ed; }
+    .mvp-connector { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 44px; padding: 6px 0; font-size: 13px; color: var(--muted); }
+    .mvp-connector span { color: var(--accent); font-size: 26px; line-height: 1; }
+    .mvp-connector p { margin: 0; overflow-wrap: anywhere; }
     footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
     @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; } }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
@@ -224,13 +236,82 @@ List&lt;Usuario&gt; findByNombreContaining(String nombreParte);</code></pre>
       </section>
       <section id="mvp">
         <h2><span class="number">07</span>MVP Empresa Global</h2>
-        <p>El MVP gestiona productos en una tienda en l&iacute;nea mediante un formulario, persistencia MySQL y una lista de productos. Se separan modelo, repositorio, servicio, controlador y vistas.</p>
+        <p>Implementaremos el MVP como un proyecto Java con Spring Boot y Maven: una aplicaci&oacute;n web monol&iacute;tica organizada en capas para listar y registrar productos. Spring MVC recibe las solicitudes, Thymeleaf genera el HTML y Spring Data JPA persiste los datos en MySQL. En este contexto, MVP significa producto m&iacute;nimo viable, no el patr&oacute;n Model-View-Presenter.</p>
+        <figure class="mvp-diagram" aria-labelledby="mvp-diagram-caption">
+          <figcaption id="mvp-diagram-caption">Proyecto Spring Boot: demo-spring-jpa</figcaption>
+          <ol class="mvp-flow">
+            <li>
+              <div class="mvp-node client">
+                <h3>Usuario &middot; Navegador</h3>
+                <p>Consulta la lista de productos y env&iacute;a el formulario de alta.</p>
+              </div>
+              <div class="mvp-connector"><span aria-hidden="true">&varr;</span><p>HTTP: GET /productos, GET /productos/nuevo y POST /productos<br>Respuesta: HTML o redirecci&oacute;n a /productos</p></div>
+            </li>
+            <li class="mvp-server">
+              <h3>Aplicaci&oacute;n Spring Boot &middot; Servidor web embebido<br><a href="#dependencies">DemoSpringJPAApplication</a> &middot; @SpringBootApplication</h3>
+              <ol class="mvp-flow">
+            <li>
+              <div class="mvp-node">
+                <h3><a href="#controller">ProductoControlador</a> &middot; Spring MVC</h3>
+                <p><code>@Controller</code> recibe solicitudes y prepara el modelo. Thymeleaf renderiza las <a href="#views">vistas</a> <code>productos/lista</code> y <code>productos/formulario</code> desde <code>src/main/resources/templates</code>.</p>
+              </div>
+              <div class="mvp-connector"><span aria-hidden="true">&varr;</span><p>listarProductos() / guardarProducto(producto)</p></div>
+            </li>
+            <li>
+              <div class="mvp-node">
+                <h3><a href="#service">ProductoServicio</a> &middot; @Service</h3>
+                <p>Spring inyecta el repositorio por constructor. El servicio coordina las operaciones de negocio y las transacciones con <code>@Transactional</code>.</p>
+              </div>
+              <div class="mvp-connector"><span aria-hidden="true">&varr;</span><p>findAll() / save(producto) &middot; Entidades Producto</p></div>
+            </li>
+            <li>
+              <div class="mvp-node">
+                <h3><a href="#repository">ProductoRepositorio</a> &middot; Spring Data JPA</h3>
+                <p><code>JpaRepository&lt;Producto, Long&gt;</code> consulta y guarda entidades mediante Hibernate.</p>
+              </div>
+            </li>
+              </ol>
+              <p class="note">Modelo JPA: <a href="#product">Producto</a> (@Entity). Conexi&oacute;n y propiedades: <a href="#properties">application.properties</a>. Spring Boot configura los componentes a partir de las dependencias y propiedades del proyecto.</p>
+            </li>
+            <li>
+              <div class="mvp-connector"><span aria-hidden="true">&varr;</span><p>SQL mediante MySQL Connector/J / datos persistidos</p></div>
+              <div class="mvp-node database">
+                <h3>MySQL &middot; demo_springJPA</h3>
+                <p>Almacena los productos: id, nombre, precio y descripci&oacute;n.</p>
+              </div>
+            </li>
+          </ol>
+          <p class="note">La entidad <a href="#product">Producto</a> es el modelo de dominio compartido por controlador, servicio y repositorio; JPA la mapea a la tabla de productos. Las flechas indican llamadas y resultados. Al guardar, el controlador redirige al listado y el navegador realiza una nueva solicitud GET.</p>
+        </figure>
+        <h3>Crear e implementar el proyecto</h3>
         <ol>
-          <li>El usuario env&iacute;a el formulario de producto.</li>
-          <li>El controlador recibe los datos y delega la l&oacute;gica al servicio.</li>
-          <li>El servicio usa el repositorio para guardar o recuperar entidades.</li>
-          <li>Thymeleaf presenta la lista o el formulario con los datos del modelo.</li>
+          <li>En <a href="https://start.spring.io/">Spring Initializr</a>, seleccionar Maven, Java y una versi&oacute;n estable de Spring Boot compatible con el JDK instalado. Usar el grupo <code>com.ecommerce</code>, el artefacto <code>demo-spring-jpa</code>, el paquete <code>com.ecommerce</code> y empaquetado JAR.</li>
+          <li>Agregar Spring Web, Thymeleaf, Spring Data JPA y MySQL Driver. Generar el ZIP, extraerlo y abrir la carpeta del proyecto en IntelliJ IDEA. Las <a href="#dependencies">dependencias y la clase principal</a> se describen a continuaci&oacute;n.</li>
+          <li>Crear la base MySQL con <code>CREATE DATABASE demo_springJPA;</code> y asignar permisos al usuario de la aplicaci&oacute;n. Configurar <a href="#properties">application.properties</a> y las variables de entorno <code>DB_USERNAME</code> y <code>DB_PASSWORD</code> en el entorno de ejecuci&oacute;n del IDE o terminal.</li>
+          <li>Implementar <a href="#product">Producto</a>, <a href="#repository">ProductoRepositorio</a>, <a href="#service">ProductoServicio</a> y <a href="#controller">ProductoControlador</a> en <code>com.ecommerce.productos</code>. Mantener la clase principal en <code>com.ecommerce</code> para que Spring detecte los componentes, repositorios y entidades de sus subpaquetes.</li>
+          <li>Crear las plantillas <a href="#views">lista.html y formulario.html</a> dentro de <code>src/main/resources/templates/productos</code>.</li>
         </ol>
+        <h3>Estructura del proyecto</h3>
+        <pre><code>demo-spring-jpa/
+|-- pom.xml
+|-- mvnw
+|-- mvnw.cmd
+`-- src/main/
+    |-- java/com/ecommerce/
+    |   |-- DemoSpringJPAApplication.java
+    |   `-- productos/
+    |       |-- Producto.java
+    |       |-- ProductoRepositorio.java
+    |       |-- ProductoServicio.java
+    |       `-- ProductoControlador.java
+    `-- resources/
+        |-- application.properties
+        `-- templates/productos/
+            |-- lista.html
+            `-- formulario.html</code></pre>
+        <h3>Ejecutar y comprobar el MVP</h3>
+        <p>Con MySQL disponible y las variables de entorno configuradas, ejecutar <code>.\mvnw.cmd spring-boot:run</code> desde la ra&iacute;z del proyecto en Windows, o <code>./mvnw spring-boot:run</code> en Linux/macOS. Tambi&eacute;n se puede ejecutar <code>DemoSpringJPAApplication</code> desde IntelliJ IDEA.</p>
+        <p>Abrir <a href="http://localhost:8080/productos">http://localhost:8080/productos</a>, seleccionar <strong>Agregar producto</strong> y guardar un producto de prueba. Verificar la redirecci&oacute;n al listado y que el producto siga apareciendo despu&eacute;s de reiniciar la aplicaci&oacute;n, confirmando la persistencia en MySQL.</p>
       </section>
       <section id="dependencies">
         <h2><span class="number">08</span>MVP: dependencias y aplicaci&oacute;n</h2>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Información Spring Boot</title>
+</head>
+<body>
+    <h1 th:text="${mensaje}"></h1>
+    <h1>Lista de Elementos</h1>
+    <ul>
+        <li th:each="elemento : ${elementos}"
+            th:text="${elemento.nombre}"></li>
+    </ul>
+</body>
+</html>

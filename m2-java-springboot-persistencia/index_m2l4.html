@@ -285,9 +285,9 @@ List&lt;Usuario&gt; findByNombreContaining(String nombreParte);</code></pre>
         </figure>
         <h3>Crear e implementar el proyecto</h3>
         <ol>
-          <li>En <a href="https://start.spring.io/">Spring Initializr</a>, seleccionar Maven, Java y una versi&oacute;n estable de Spring Boot compatible con el JDK instalado. Usar el grupo <code>com.ecommerce</code>, el artefacto <code>demo-spring-jpa</code>, el paquete <code>com.ecommerce</code> y empaquetado JAR.</li>
+          <li>En <a href="https://start.spring.io/">Spring Initializr</a>, seleccionar Maven, Java y una versi&oacute;n estable de Spring Boot compatible con el JDK instalado. Usar el grupo <code>com.example</code>, el artefacto <code>demo-spring-jpa</code>, el paquete <code>com.example.demospringjpa</code> y empaquetado JAR. Como alternativa, <a href="https://start.spring.io/#!type=maven-project&amp;language=java&amp;platformVersion=4.1.1&amp;packaging=jar&amp;configurationFileFormat=properties&amp;jvmVersion=25&amp;groupId=com.example&amp;artifactId=demospringjpa&amp;packageName=com.example.demospringjpa&amp;dependencies=devtools,thymeleaf,web,data-jpa,mysql">descargar el proyecto ya configurado desde Initializr</a> (Java 25, Spring Boot 4.1.1 y dependencias seleccionadas).</li>
           <li>Agregar Spring Web, Thymeleaf, Spring Data JPA y MySQL Driver. Generar el ZIP, extraerlo y abrir la carpeta del proyecto en IntelliJ IDEA. Las <a href="#dependencies">dependencias y la clase principal</a> se describen a continuaci&oacute;n.</li>
-          <li>Crear la base MySQL con <code>CREATE DATABASE demo_springJPA;</code> y asignar permisos al usuario de la aplicaci&oacute;n. Configurar <a href="#properties">application.properties</a> y las variables de entorno <code>DB_USERNAME</code> y <code>DB_PASSWORD</code> en el entorno de ejecuci&oacute;n del IDE o terminal.</li>
+          <li>Crear la base MySQL con <code>CREATE DATABASE demo_springjpa;</code> y asignar permisos al usuario de la aplicaci&oacute;n. Configurar <a href="#properties">application.properties</a> y las variables de entorno <code>DB_USERNAME</code> y <code>DB_PASSWORD</code> en el entorno de ejecuci&oacute;n del IDE o terminal.</li>
           <li>Implementar <a href="#product">Producto</a>, <a href="#repository">ProductoRepositorio</a>, <a href="#service">ProductoServicio</a> y <a href="#controller">ProductoControlador</a> en <code>com.ecommerce.productos</code>. Mantener la clase principal en <code>com.ecommerce</code> para que Spring detecte los componentes, repositorios y entidades de sus subpaquetes.</li>
           <li>Crear las plantillas <a href="#views">lista.html y formulario.html</a> dentro de <code>src/main/resources/templates/productos</code>.</li>
         </ol>
@@ -297,7 +297,7 @@ List&lt;Usuario&gt; findByNombreContaining(String nombreParte);</code></pre>
 |-- mvnw
 |-- mvnw.cmd
 `-- src/main/
-    |-- java/com/ecommerce/
+    |-- java/example/demospringjpa/
     |   |-- DemoSpringJPAApplication.java
     |   `-- productos/
     |       |-- Producto.java
@@ -337,7 +337,7 @@ List&lt;Usuario&gt; findByNombreContaining(String nombreParte);</code></pre>
     &lt;/dependency&gt;
 &lt;/dependencies&gt;</code></pre>
         <h3>Clase de entrada</h3>
-        <pre><code>package com.ecommerce;
+        <pre><code>package com.example.demospringjpa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -353,7 +353,7 @@ public class DemoSpringJPAApplication {
       <section id="properties">
         <h2><span class="number">09</span>MVP: conexi&oacute;n MySQL</h2>
         <p>Ubicaci&oacute;n: <code>src/main/resources/application.properties</code>. Sustituye las variables de entorno por las credenciales configuradas en tu entorno.</p>
-        <pre><code>spring.datasource.url=jdbc:mysql://localhost:3306/demo_springJPA
+        <pre><code>spring.datasource.url=jdbc:mysql://localhost:3306/demo_springjpa
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
 spring.jpa.hibernate.ddl-auto=update
@@ -363,7 +363,7 @@ spring.jpa.show-sql=true</code></pre>
       <section id="product">
         <h2><span class="number">10</span>MVP: entidad Producto</h2>
         <p>La entidad representa la tabla de productos. La lectura describe los campos <code>id</code>, <code>nombre</code>, <code>precio</code> y <code>descripcion</code>.</p>
-        <pre><code>package com.ecommerce.productos;
+        <pre><code>package com.example.demospringjpa.productos;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -402,7 +402,7 @@ public class Producto {
       <section id="repository">
         <h2><span class="number">11</span>MVP: repositorio de productos</h2>
         <p>La interfaz hereda las operaciones CRUD de Spring Data JPA sin requerir una implementación manual.</p>
-        <pre><code>package com.ecommerce.productos;
+        <pre><code>package com.example.demospringjpa.productos;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -413,7 +413,7 @@ public interface ProductoRepositorio
       <section id="service">
         <h2><span class="number">12</span>MVP: servicio de productos</h2>
         <p>El servicio concentra la lógica de negocio y delega la persistencia al repositorio.</p>
-        <pre><code>package com.ecommerce.productos;
+        <pre><code>package com.example.demospringjpa.productos;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -441,7 +441,7 @@ public class ProductoServicio {
       <section id="controller">
         <h2><span class="number">13</span>MVP: controlador de productos</h2>
         <p>El controlador entrega la lista de productos, muestra el formulario y procesa su env&iacute;o.</p>
-        <pre><code>package com.ecommerce.productos;
+        <pre><code>package com.example.demospringjpa.productos;
 
 import java.math.BigDecimal;
 import org.springframework.stereotype.Controller;
@@ -530,6 +530,7 @@ public class ProductoControlador {
       <section id="codigo-mvp">
         <h2><span class="number">15</span>MVP: c&oacute;digo de proyecto</h2>
         <p>El c&oacute;digo del MVP se presenta en las secciones de <a href="#dependencies">dependencias y aplicaci&oacute;n</a>, <a href="#properties">conexi&oacute;n MySQL</a>, <a href="#product">entidad Producto</a>, <a href="#repository">repositorio</a>, <a href="#service">servicio</a>, <a href="#controller">controlador</a> y <a href="#views">vistas Thymeleaf</a>.</p>
+        <p>Como referencia de un <strong>MVP ampliado y completo</strong>, consulta el <a href="https://github.com/pablosand/construccion-software-basic/tree/main/m2-java-springboot-persistencia/demospringjpa">proyecto demospringjpa en GitHub</a>, que además del alta y listado permite editar y eliminar productos, e incluye un contador de productos.</p>
         <a href="#inicio">Volver al inicio</a>
       </section>
     </main>

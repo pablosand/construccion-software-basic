@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flujo de datos y funciones React</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; overflow-wrap: anywhere; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    .reading-figure { margin: 20px 0; }
+    .reading-figure img { display: block; width: 100%; max-width: 650px; height: auto; border: 1px solid var(--line); background: #fff; }
+    .reading-figure figcaption { margin-top: 8px; color: var(--muted); font-size: 14px; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Flujo de datos y funciones React</h1>
+    <p>Lectura 2 &middot; Props, estado, reducers y primer proyecto</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#flujo">Flujo de datos unidireccional</a></li>
+        <li><a href="#props-state">Props y estado</a></li>
+        <li><a href="#redux">Componentes y Redux</a></li>
+        <li><a href="#reducer">Reducer con useReducer</a></li>
+        <li><a href="#functions">Funciones en React</a></li>
+        <li><a href="#project">Crear un proyecto React</a></li>
+        <li><a href="#structure">Estructura del proyecto</a></li>
+        <li><a href="#run">Ejecutar y probar</a></li>
+        <li><a href="#color-app">App: cambiar el color de fondo</a></li>
+        <li><a href="#review">Repaso</a></li>
+      </ol>
+      <p>
+        <a href="index_m3l1.html">Lectura 1</a>
+        &middot;
+        <a href="index_m3l3.html">Lectura 3</a>
+        &middot;
+        <a href="index_m3l4.html">Lectura 4</a>
+      </p>
+    </nav>
+    <main id="contenido">
+      <section id="flujo">
+        <h2><span class="number">01</span>Flujo de datos unidireccional</h2>
+        <p>Los datos y el estado fluyen del componente padre hacia sus hijos mediante props. Para comunicar una acción del hijo al padre, el padre puede pasar una función callback como prop.</p>
+        <h3>El padre es propietario del estado</h3>
+        <pre><code>import { useState } from "react";
+
+function BotonAgregar({ onAgregar }) {
+  return &lt;button onClick={onAgregar}&gt;Agregar al carrito&lt;/button&gt;;
+}
+
+function Carrito() {
+  const [cantidad, setCantidad] = useState(0);
+
+  function agregarProducto() {
+    setCantidad(actual =&gt; actual + 1);
+  }
+
+  return (
+    &lt;section&gt;
+      &lt;p&gt;Productos en el carrito: {cantidad}&lt;/p&gt;
+      &lt;BotonAgregar onAgregar={agregarProducto} /&gt;
+    &lt;/section&gt;
+  );
+}
+
+export default Carrito;</code></pre>
+        <p class="note">El hijo no modifica el estado del padre: invoca la callback recibida y el padre actualiza su propio estado.</p>
+      </section>
+      <section id="props-state">
+        <h2><span class="number">02</span>Props y estado</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Dato</th><th scope="col">Qui&eacute;n lo controla</th><th scope="col">Cambia y vuelve a renderizar</th></tr></thead>
+            <tbody>
+              <tr><td>Props</td><td>El componente padre</td><td>El hijo las recibe como entradas de solo lectura.</td></tr>
+              <tr><td>Estado</td><td>El componente que lo declara</td><td>S&iacute;, al actualizarse React vuelve a renderizar.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Props como entrada y estado local</h3>
+        <pre><code>import { useState } from "react";
+
+function Producto({ nombre }) {
+  const [seleccionado, setSeleccionado] = useState(false);
+
+  return (
+    &lt;article&gt;
+      &lt;h2&gt;{nombre}&lt;/h2&gt;
+      &lt;p&gt;{seleccionado ? "Agregado" : "Disponible"}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setSeleccionado(valor =&gt; !valor)}&gt;
+        {seleccionado ? "Quitar" : "Agregar"}
+      &lt;/button&gt;
+    &lt;/article&gt;
+  );
+}
+
+function App() {
+  return &lt;Producto nombre="Bolsa reutilizable" /&gt;;
+}</code></pre>
+        <p class="note">Las props no se modifican desde <code>Producto</code>; <code>seleccionado</code> es estado interno que se actualiza con su setter.</p>
+      </section>
+      <section id="redux">
+        <h2><span class="number">03</span>Componentes y Redux</h2>
+        <p>El diagrama de la lectura muestra c&oacute;mo se relacionan los componentes de React, Redux y el DOM en respuesta a cambios e interacciones.</p>
+        <figure class="reading-figure">
+          <img src="images/redux-architecture.png" alt="Diagrama del ciclo React y Redux: los componentes se renderizan en el DOM virtual, que se compara y actualiza el DOM real. Los eventos de interfaz despachan acciones que pasan por reducers y el store; los eventos del servidor tambi&eacute;n actualizan la interfaz.">
+          <figcaption>Figura 2. Diagrama de arquitectura de React con Redux. Fuente: Franklin (2024)</figcaption>
+        </figure>
+        <p>El flujo puede resumirse as&iacute;:</p>
+        <ol>
+          <li>Un evento de la interfaz despacha una acci&oacute;n.</li>
+          <li>El reducer recibe el estado actual y la acci&oacute;n, y devuelve un estado nuevo.</li>
+          <li>El store conserva el estado de la aplicaci&oacute;n.</li>
+          <li>Los componentes leen el estado y renderizan la interfaz.</li>
+          <li>Las props pasan los datos del padre a los componentes hijos.</li>
+        </ol>
+        <pre><code>// Ejemplo conceptual de una acci&oacute;n Redux
+const accion = {
+  type: "carrito/productoAgregado",
+  payload: { id: 1, nombre: "Bolsa reutilizable" }
+};</code></pre>
+        <p class="note">El c&oacute;digo de acci&oacute;n es ilustrativo; se desarrolla el diagrama y los principios de Redux, pero no proporciona un bloque de implementaci&oacute;n completo.</p>
+      </section>
+      <section id="reducer">
+        <h2><span class="number">04</span>Reducer con useReducer</h2>
+        <p>Un reducer es una funci&oacute;n pura que calcula el estado siguiente a partir del estado actual y una acci&oacute;n.</p>
+        <pre><code>import { useReducer } from "react";
+
+const estadoInicial = { contador: 0 };
+
+function reducer(estado, accion) {
+  switch (accion.type) {
+    case "incrementar":
+      return { contador: estado.contador + 1 };
+    case "decrementar":
+      return { contador: estado.contador - 1 };
+    default:
+      throw new Error(`Acci&oacute;n desconocida: ${accion.type}`);
+  }
+}
+
+function Contador() {
+  const [estado, dispatch] = useReducer(reducer, estadoInicial);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Contador: {estado.contador}&lt;/p&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "incrementar" })}&gt;
+        Incrementar
+      &lt;/button&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "decrementar" })}&gt;
+        Decrementar
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default Contador;</code></pre>
+        <p class="note">El estado se reemplaza por uno nuevo; no se modifica directamente.</p>
+      </section>
+      <section id="functions">
+        <h2><span class="number">05</span>Funciones en React</h2>
+        <h3>Funci&oacute;n de componente</h3>
+        <pre><code>function MiComponente() {
+  return &lt;h1&gt;Universidad Siglo 21&lt;/h1&gt;;
+}
+
+export default MiComponente;</code></pre>
+        <h3>Componente con arrow function</h3>
+        <pre><code>const MiComponente = () =&gt; {
+  return &lt;h1&gt;Universidad Siglo 21&lt;/h1&gt;;
+};
+
+export default MiComponente;</code></pre>
+        <h3>Manejador de evento</h3>
+        <pre><code>function MiComponente() {
+  const manejarClick = () =&gt; {
+    alert("Bot&oacute;n presionado");
+  };
+
+  return &lt;button onClick={manejarClick}&gt;Clic aqu&iacute;&lt;/button&gt;;
+}
+
+export default MiComponente;</code></pre>
+        <h3>Funci&oacute;n de utilidad</h3>
+        <pre><code>const calcularSuma = (a, b) =&gt; a + b;
+
+function MiComponente() {
+  const resultado = calcularSuma(5, 10);
+  return &lt;h1&gt;La suma es: {resultado}&lt;/h1&gt;;
+}
+
+export default MiComponente;</code></pre>
+      </section>
+      <section id="project">
+        <h2><span class="number">06</span>Crear un proyecto React</h2>
+        <p>Se propone crear un proyecto desde una IDe (ejemplo: VS Code) y verificar que Node.js y npm est&eacute;n disponibles.</p>
+        <h3>Verificar Node.js y npm</h3>
+        <pre><code>node -v
+npm -v</code></pre>
+        <h3>Comando de creaci&oacute;n citado</h3>
+        <pre><code>npx create-react-app demo-react</code></pre>
+        <p class="note">Create React App est&aacute; en modo de mantenimiento y no se recomienda para proyectos nuevos. Para un proyecto nuevo, React recomienda herramientas como Vite.</p>
+        <h3>Ejemplo actual con Vite</h3>
+        <pre><code>npm create vite@latest demo-react -- --template react
+cd demo-react
+npm install</code></pre>
+        <p class="note">El comando con Vite es una alternativa actual.</p>
+      </section>
+      <section id="structure">
+        <h2><span class="number">07</span>Estructura del proyecto</h2>
+        <p>Se muestra un proyecto generado con Create React App. Una estructura t&iacute;pica incluye:</p>
+        <pre><code>demo-react/
+├── public/
+│   ├── index.html
+│   └── favicon.ico
+├── src/
+│   ├── components/
+│   │   ├── Header.js
+│   │   └── Footer.js
+│   ├── App.css
+│   ├── App.js
+│   ├── index.css
+│   └── index.js
+├── package.json
+└── README.md</code></pre>
+        <p><code>package.json</code> registra dependencias y scripts. <code>src/index.js</code> es el punto de entrada habitual y renderiza <code>App</code>.</p>
+      </section>
+      <section id="run">
+        <h2><span class="number">08</span>Ejecutar y probar</h2>
+        <h3>Iniciar el servidor de desarrollo</h3>
+        <pre><code>npm start</code></pre>
+        <p>Con Create React App, el servidor suele estar disponible en <code>http://localhost:3000</code>. En Vite, el script de desarrollo normalmente se inicia con:</p>
+        <pre><code>npm run dev</code></pre>
+        <p class="note">El comando depende de los scripts definidos en <code>package.json</code>.</p>
+      </section>
+      <section id="color-app">
+        <h2><span class="number">09</span>App: cambiar el color de fondo</h2>
+        <p>El ejemplo citado usa <code>useState</code> para conservar el color actual y cambiarlo al pulsar un bot&oacute;n.</p>
+        <h3>src/App.js</h3>
+        <pre><code>import React, { useState } from "react";
+import "./App.css";
+
+function App() {
+  const [color, setColor] = useState("#ffffff");
+
+  const cambiarColor = () =&gt; {
+    const nuevoColor = `#${Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, "0")}`;
+    setColor(nuevoColor);
+  };
+
+  return (
+    &lt;main className="App" style={{ backgroundColor: color }}&gt;
+      &lt;h1&gt;Cambiar color de fondo&lt;/h1&gt;
+      &lt;button onClick={cambiarColor}&gt;Cambiar color&lt;/button&gt;
+    &lt;/main&gt;
+  );
+}
+
+export default App;</code></pre>
+        <h3>src/App.css</h3>
+        <pre><code>.App {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}</code></pre>
+        <p class="note">Se corrige el espacio accidental de la ruta de importaci&oacute;n <code>./App.css</code> y se completa el color hexadecimal con seis d&iacute;gitos.</p>
+      </section>
+      <section id="review">
+        <h2><span class="number">10</span>Repaso</h2>
+        <p><strong>El flujo de datos en React es bidireccional.</strong></p>
+        <p>Respuesta: falso. Las props fluyen del padre al hijo; el hijo puede solicitar cambios en el padre mediante callbacks que este le pasa como props.</p>
+        <h3>Callback</h3>
+        <pre><code>function Boton({ onConfirmar }) {
+  return (
+    &lt;button onClick={() =&gt; onConfirmar("Pedido confirmado")}&gt;
+      Confirmar pedido
+    &lt;/button&gt;
+  );
+}</code></pre>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer>
+    <a href="index_m3l1.html">Lectura 1</a>
+    &middot;
+    <a href="index_m3l3.html">Lectura 3</a>
+    &middot;
+    <a href="index_m3l4.html">Lectura 4</a>
+  </footer>
+</body>
+</html>

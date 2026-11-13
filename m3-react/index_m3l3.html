@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSX y componentes en React</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; overflow-wrap: anywhere; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, li code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>JSX y componentes en React</h1>
+    <p>Lectura 3 &middot; Elementos, expresiones y estilos</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de la lectura">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#funcionamiento">Funcionamiento de React</a></li>
+        <li><a href="#jsx">Elementos React con JSX</a></li>
+        <li><a href="#componentes">Componentes y anidamiento</a></li>
+        <li><a href="#expresiones">Expresiones y listas</a></li>
+        <li><a href="#estilos">Estilos en JSX</a></li>
+        <li><a href="#ecomarket">Ejemplo: Carrito de compras</a></li>
+        <li><a href="#repaso">Repaso</a></li>
+      </ol>
+      <p>
+        <a href="index_m3l1.html">Lectura 1</a>
+        &middot;
+        <a href="index_m3l2.html">Lectura 2</a>
+        &middot;
+        <a href="index_m3l4.html">Lectura 4</a>
+      </p>
+    </nav>
+    <main id="contenido">
+      <section id="funcionamiento">
+        <h2><span class="number">01</span>Funcionamiento de React</h2>
+        <p>React organiza la interfaz en componentes que reúnen la estructura visual y la lógica relacionada. Cada componente describe qué debe mostrarse; cuando cambian los datos, React actualiza la interfaz correspondiente.</p>
+        <p>Un elemento React puede crearse con <code>React.createElement</code>. La llamada recibe el tipo de elemento, sus propiedades y, opcionalmente, sus hijos.</p>
+        <pre><code>const titulo = React.createElement(
+  "h1",
+  null,
+  "Camisa de Algodón"
+);</code></pre>
+        <p class="note">JSX ofrece una sintaxis más legible para describir esos elementos. Una herramienta de compilación transforma JSX antes de que el navegador ejecute la aplicación.</p>
+      </section>
+      <section id="jsx">
+        <h2><span class="number">02</span>Elementos React con JSX</h2>
+        <p>JSX permite escribir una estructura parecida a HTML dentro de JavaScript. Las etiquetas representan elementos y pueden incluir atributos y elementos hijos.</p>
+        <h3>Una lista de productos</h3>
+        <pre><code>function ListaProductos() {
+  return (
+    &lt;ul&gt;
+      &lt;li&gt;Camisa de Algodón - $2999&lt;/li&gt;
+      &lt;li&gt;Pantalón - $4999&lt;/li&gt;
+      &lt;li&gt;Zapatillas Deportivas - $6999&lt;/li&gt;
+    &lt;/ul&gt;
+  );
+}</code></pre>
+        <p>Las etiquetas JSX deben cerrarse correctamente. Si un elemento no tiene hijos, puede escribirse como etiqueta autocerrada, por ejemplo <code>&lt;ArticuloCarrito /&gt;</code>.</p>
+      </section>
+      <section id="componentes">
+        <h2><span class="number">03</span>Componentes y anidamiento</h2>
+        <p>Los componentes se pueden anidar para dividir una interfaz en piezas reutilizables. Las props permiten que el componente padre envíe a cada hijo los datos que necesita.</p>
+        <h3>Carrito con componentes hijos</h3>
+        <pre><code>function CarritoDeCompras() {
+  return (
+    &lt;section&gt;
+      &lt;ArticuloCarrito producto="Camisa de Algodón" precio="$2999" /&gt;
+      &lt;ArticuloCarrito producto="Pantalón" precio="$4999" /&gt;
+      &lt;ArticuloCarrito producto="Zapatillas Deportivas" precio="$6999" /&gt;
+    &lt;/section&gt;
+  );
+}
+
+function ArticuloCarrito({ producto, precio }) {
+  return &lt;p&gt;{producto} - {precio}&lt;/p&gt;;
+}</code></pre>
+        <p class="note">Cada uso de <code>ArticuloCarrito</code> crea una instancia del componente con valores específicos para sus props.</p>
+        <h3>Componentes anidados para características</h3>
+        <pre><code>function Caracteristica({ texto }) {
+  return &lt;li&gt;{texto}&lt;/li&gt;;
+}
+
+function ListaDeCaracteristicas() {
+  return (
+    &lt;ul&gt;
+      &lt;Caracteristica texto="100% Algodón" /&gt;
+      &lt;Caracteristica texto="Disponible en varios colores" /&gt;
+      &lt;Caracteristica texto="Talles: S, M, L, XL" /&gt;
+    &lt;/ul&gt;
+  );
+}</code></pre>
+      </section>
+      <section id="expresiones">
+        <h2><span class="number">04</span>Expresiones y listas</h2>
+        <p>Las llaves <code>{}</code> permiten insertar expresiones JavaScript en JSX. Se usan para mostrar variables, acceder a props o calcular el contenido de un elemento.</p>
+        <pre><code>function Producto({ nombre, precio, enOferta }) {
+  return (
+    &lt;article&gt;
+      &lt;h2&gt;{nombre}&lt;/h2&gt;
+      &lt;p&gt;Precio: ${precio}&lt;/p&gt;
+      {enOferta &amp;&amp; &lt;strong&gt;En oferta&lt;/strong&gt;}
+    &lt;/article&gt;
+  );
+}</code></pre>
+        <h3>Renderizar un array con <code>map</code></h3>
+        <pre><code>const productos = [
+  { id: 1, nombre: "Camisa de Algodón", precio: 2999, enOferta: true },
+  { id: 2, nombre: "Pantalón", precio: 4999, enOferta: false }
+];
+
+function App() {
+  return (
+    &lt;ul&gt;
+      {productos.map(producto =&gt; (
+        &lt;li key={producto.id}&gt;
+          &lt;Producto
+            nombre={producto.nombre}
+            precio={producto.precio}
+            enOferta={producto.enOferta}
+          /&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+        <p class="note"><code>map</code> transforma cada producto en un elemento JSX. La prop especial <code>key</code> ayuda a React a identificar de forma estable cada elemento de la lista.</p>
+      </section>
+      <section id="estilos">
+        <h2><span class="number">05</span>Estilos en JSX</h2>
+        <p>En JSX se usa <code>className</code> en lugar de <code>class</code>. Los estilos se pueden definir en línea, en una hoja CSS externa o mediante clases elegidas dinámicamente.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Alternativa</th><th scope="col">Uso</th><th scope="col">Ejemplo</th></tr></thead>
+            <tbody>
+              <tr><td>Estilo en línea</td><td>Objeto JavaScript en la prop <code>style</code>; las propiedades CSS se escriben en camelCase.</td><td><code>style={{ backgroundColor: "lightblue" }}</code></td></tr>
+              <tr><td>Hoja externa</td><td>Importar un archivo CSS y aplicar sus clases.</td><td><code>className="mi-clase"</code></td></tr>
+              <tr><td>Clases dinámicas</td><td>Construir el valor de <code>className</code> según los datos.</td><td><code>className={`producto ${enOferta ? "oferta" : ""}`}</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>CSS externo y clase dinámica</h3>
+        <pre><code>import "./estilos.css";
+
+function Producto({ nombre, enOferta }) {
+  const clase = enOferta ? "producto oferta" : "producto";
+
+  return &lt;article className={clase}&gt;{nombre}&lt;/article&gt;;
+}</code></pre>
+        <p class="note">Los estilos en línea se expresan como un objeto, por ejemplo <code>style={{ fontSize: "20px" }}</code>. Para reglas reutilizables y estados visuales, una hoja CSS externa puede mantener los estilos más organizados.</p>
+      </section>
+      <section id="ecomarket">
+        <h2><span class="number">06</span>Ejemplo: aplicación EcoMarket</h2>
+        <p>El ejemplo de EcoMarket combina las ideas de la lectura: la aplicación itera sobre sus productos, delega la presentación en componentes, recibe datos mediante props y aplica clases CSS para dar estilo al contenido.</p>
+        <pre><code>function ListaEcoMarket({ productos }) {
+  return (
+    &lt;main&gt;
+      &lt;h1 className="titulo"&gt;EcoMarket&lt;/h1&gt;
+      &lt;ul&gt;
+        {productos.map(producto =&gt; (
+          &lt;li key={producto.id}&gt;
+            &lt;Producto
+              nombre={producto.nombre}
+              precio={producto.precio}
+              enOferta={producto.enOferta}
+            /&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+      </section>
+      <section id="repaso">
+        <h2><span class="number">07</span>Repaso</h2>
+        <ul>
+          <li>React representa interfaces mediante elementos y componentes reutilizables.</li>
+          <li>JSX describe elementos dentro de JavaScript; no es interpretado directamente por el navegador y se compila como parte del proyecto.</li>
+          <li>Los componentes se componen y anidan; las props transmiten datos de padres a hijos.</li>
+          <li>Las llaves insertan expresiones JavaScript y <code>map</code> ayuda a renderizar colecciones.</li>
+          <li>Usa <code>key</code> para identificar de forma estable los elementos renderizados desde listas.</li>
+          <li>En JSX, usa <code>className</code>; puedes aplicar estilos en línea, hojas CSS y clases dinámicas.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+  <footer>
+    <a href="index_m3l1.html">Lectura 1</a>
+    &middot;
+    <a href="index_m3l2.html">Lectura 2</a>
+    &middot;
+    <a href="index_m3l4.html">Lectura 4</a>
+  </footer>
+</body>
+</html>

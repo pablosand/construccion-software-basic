@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>React y JSX</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; overflow-wrap: anywhere; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>React y JSX</h1>
+    <p>Lectura 1 &middot; Componentes, props, estado y hooks</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de ejemplos">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#react">React y aplicaciones SPA</a></li>
+        <li><a href="#nombres">Convenciones de nombres</a></li>
+        <li><a href="#dom">DOM y DOM virtual</a></li>
+        <li><a href="#jsx">JSX</a></li>
+        <li><a href="#componentes">Componentes funcionales y de clase</a></li>
+        <li><a href="#props">Props</a></li>
+        <li><a href="#state">Estado con useState</a></li>
+        <li><a href="#class-state">Estado en componentes de clase</a></li>
+        <li><a href="#conditional">Renderizado condicional</a></li>
+        <li><a href="#hooks">Hooks: useState y useEffect</a></li>
+        <li><a href="#context">useContext</a></li>
+        <li><a href="#reducer">useReducer</a></li>
+        <li><a href="#other-hooks">Otros hooks</a></li>
+        <li><a href="#lifecycle">Ciclo de vida</a></li>
+        <li><a href="#ecomarket">Ejemplo: Temporizador</a></li>
+      </ol>
+      <p>
+        <a href="index_m3l2.html">Lectura 2</a>
+        &middot;
+        <a href="index_m3l3.html">Lectura 3</a>
+        &middot;
+        <a href="index_m3l4.html">Lectura 4</a>
+      </p>
+    </nav>
+    <main id="contenido">
+      <section id="react">
+        <h2><span class="number">01</span>React y aplicaciones SPA</h2>
+        <p>React es una biblioteca de JavaScript para construir interfaces con componentes reutilizables. En una SPA (Single Page Application), el navegador carga una p&aacute;gina inicial y React actualiza las partes necesarias cuando cambia el estado o el usuario interact&uacute;a.</p>
+      </section>
+      <section id="nombres">
+        <h2><span class="number">02</span>Convenciones de nombres</h2>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Elemento</th><th scope="col">Convenci&oacute;n</th><th scope="col">Ejemplos</th></tr></thead>
+          <tbody>
+            <tr><td>Proyecto y archivos</td><td>kebab-case</td><td><code>tienda-online-react</code>, <code>detalle-producto.jsx</code></td></tr>
+            <tr><td>Componentes</td><td>PascalCase</td><td><code>DetalleProducto</code>, <code>Contador</code></td></tr>
+            <tr><td>Variables, funciones, props y estado</td><td>camelCase</td><td><code>numeroDeElementos</code>, <code>agregarAlCarrito</code></td></tr>
+            <tr><td>Atributos JSX</td><td>camelCase y nombres DOM de React</td><td><code>onClick</code>, <code>className</code>, <code>htmlFor</code></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+      <section id="dom">
+        <h2><span class="number">03</span>DOM y DOM virtual</h2>
+        <h3>El DOM del navegador</h3>
+        <p>El DOM (Document Object Model) es la representaci&oacute;n de una p&aacute;gina como un &aacute;rbol de nodos que el navegador mantiene en memoria. Cada elemento HTML, texto y atributo forma parte de ese &aacute;rbol. El navegador lo usa para mostrar la p&aacute;gina y JavaScript puede consultarlo o modificarlo.</p>
+        <pre><code>document
+└── body
+    └── main
+        ├── p: "Contador: 0"
+        └── button: "Sumar"</code></pre>
+        <h3>La descripci&oacute;n de interfaz de React</h3>
+        <p>En React, el componente no suele modificar directamente esos nodos. Devuelve JSX, que describe qu&eacute; interfaz corresponde a las props y al estado actuales. React convierte esa descripci&oacute;n en elementos de React y conserva la informaci&oacute;n necesaria para gestionar las renderizaciones. A esa representaci&oacute;n en memoria se la suele llamar <strong>DOM virtual</strong>: no es el DOM del navegador ni una segunda p&aacute;gina visible.</p>
+        <h3>Qu&eacute; ocurre cuando cambia el estado</h3>
+        <p>Cuando el estado cambia, React vuelve a ejecutar el componente para obtener la nueva descripci&oacute;n. La reconcilia con la anterior, calcula qu&eacute; debe cambiar y aplica esas actualizaciones al DOM real durante el commit. As&iacute;, React puede actualizar el texto del contador sin reconstruir toda la p&aacute;gina; el componente, sin embargo, puede volver a ejecutarse.</p>
+        <pre><code>function Contador() {
+  const [cuenta, setCuenta] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Contador: {cuenta}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCuenta(valor =&gt; valor + 1)}&gt;
+        Sumar
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+        <p class="note">Al pulsar el bot&oacute;n, cambia <code>cuenta</code>; React calcula la siguiente interfaz y actualiza el texto correspondiente en el DOM. La reconciliaci&oacute;n la gestiona React, no se programa comparando &aacute;rboles manualmente.</p>
+      </section>
+      <section id="jsx">
+        <h2><span class="number">04</span>JSX</h2>
+        <p>JSX permite describir elementos de interfaz dentro de JavaScript. Las expresiones JavaScript se insertan entre llaves y el proyecto necesita una herramienta de compilaci&oacute;n como Vite.</p>
+        <h3>Expresi&oacute;n dentro de JSX</h3>
+        <pre><code>function App() {
+  const nombre = "Martina";
+  const saludo = &lt;h1&gt;Bienvenida, {nombre}!&lt;/h1&gt;;
+
+  return (
+    &lt;div&gt;
+      {saludo}
+      &lt;p&gt;Aplicaci&oacute;n con React&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+        <h3>Funci&oacute;n que devuelve JSX</h3>
+        <pre><code>function obtenerSaludo(nombre) {
+  return &lt;h1&gt;Bienvenida, {nombre}!&lt;/h1&gt;;
+}
+
+function App() {
+  return &lt;div&gt;{obtenerSaludo("Martina")}&lt;/div&gt;;
+}
+
+export default App;</code></pre>
+        <p class="note">Los componentes usados como etiquetas JSX empiezan con may&uacute;scula; una funci&oacute;n auxiliar como <code>obtenerSaludo</code> puede llamarse directamente dentro del componente.</p>
+      </section>
+      <section id="componentes">
+        <h2><span class="number">05</span>Componentes funcionales y de clase</h2>
+        <h3>Componente funcional</h3>
+        <pre><code>function Saludo({ nombre }) {
+  return &lt;h1&gt;Hola, {nombre}!&lt;/h1&gt;;
+}
+
+export default Saludo;</code></pre>
+        <h3>Componente de clase</h3>
+        <pre><code>import { Component } from "react";
+
+class Saludo extends Component {
+  render() {
+    return &lt;h1&gt;Hola, {this.props.nombre}!&lt;/h1&gt;;
+  }
+}
+
+export default Saludo;</code></pre>
+        <h3>Componente compuesto con lista</h3>
+        <pre><code>function App() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Marcas de autos&lt;/h1&gt;
+      &lt;ul&gt;
+        &lt;li&gt;Ford&lt;/li&gt;
+        &lt;li&gt;Chevrolet&lt;/li&gt;
+        &lt;li&gt;Dodge&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</code></pre>
+        <p class="note">Se presenta componentes de clase como alternativa. Para componentes nuevos suele preferirse la forma funcional con hooks.</p>
+      </section>
+      <section id="props">
+        <h2><span class="number">06</span>Props</h2>
+        <p>Las props son entradas de solo lectura que el componente padre entrega al hijo. Pueden contener valores y funciones.</p>
+        <pre><code>function Saludo({ nombre }) {
+  return &lt;h1&gt;Bienvenido, {nombre}&lt;/h1&gt;;
+}
+
+function App() {
+  return &lt;Saludo nombre="Carlos" /&gt;;
+}
+
+export default App;</code></pre>
+        <p class="note">Se muestra la misma idea accediendo a <code>props.nombre</code>; aquí se utiliza desestructuración en los parámetros.</p>
+      </section>
+      <section id="state">
+        <h2><span class="number">07</span>Estado con useState</h2>
+        <p>El estado pertenece al componente y puede cambiar con el tiempo. Al actualizarlo, React vuelve a renderizar la interfaz.</p>
+        <h3>Contador funcional</h3>
+        <pre><code>import { useState } from "react";
+
+function Contador() {
+  const [contador, setContador] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Se presion&oacute; el bot&oacute;n {contador} veces&lt;/p&gt;
+      &lt;button onClick={() =&gt; setContador(valor =&gt; valor + 1)}&gt;
+        Haz clic
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default Contador;</code></pre>
+        <p class="note">Se utiliza la forma funcional de actualización para calcular el valor siguiente a partir del estado previo.</p>
+        <h3 id="conditional">Renderizado condicional basado en el estado</h3>
+        <pre><code>function Contador() {
+  const [cuenta, setCuenta] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{cuenta &gt; 0 ? "Se hizo clic" : "No se hizo clic"}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCuenta(valor =&gt; valor + 1)}&gt;
+        Haz clic
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </section>
+      <section id="class-state">
+        <h2><span class="number">08</span>Estado en componentes de clase</h2>
+        <h3>Inicializaci&oacute;n y actualización</h3>
+        <pre><code>import { Component } from "react";
+
+class Contador extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { cuenta: 0 };
+  }
+
+  incrementar = () =&gt; {
+    this.setState(estadoAnterior =&gt; ({
+      cuenta: estadoAnterior.cuenta + 1
+    }));
+  };
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;p&gt;Contador: {this.state.cuenta}&lt;/p&gt;
+        &lt;button onClick={this.incrementar}&gt;Incrementar&lt;/button&gt;
+      &lt;/div&gt;
+    );
+  }
+}</code></pre>
+        <p class="note">El ejemplo muestra la inicialización con <code>this.state</code> y una actualización con <code>setState</code>. La forma funcional suele ser preferible para lógica nueva.</p>
+      </section>
+      <section id="hooks">
+        <h2><span class="number">09</span>Hooks: useState y useEffect</h2>
+        <h3>Sintaxis general de useEffect</h3>
+        <pre><code>useEffect(() =&gt; {
+  // Efecto que se ejecuta después del render.
+  return () =&gt; {
+    // Limpieza opcional del efecto.
+  };
+}, [dependencias]);</code></pre>
+        <h3>Temporizador con limpieza del intervalo</h3>
+        <pre><code>import { useEffect, useState } from "react";
+
+function Temporizador() {
+  const [segundos, setSegundos] = useState(0);
+
+  useEffect(() =&gt; {
+    const intervalo = setInterval(() =&gt; {
+      setSegundos(valor =&gt; valor + 1);
+    }, 1000);
+
+    return () =&gt; clearInterval(intervalo);
+  }, []);
+
+  return &lt;p&gt;Tiempo: {segundos} segundos&lt;/p&gt;;
+}</code></pre>
+        <p class="note">La dependencia vacía hace que el intervalo se configure al montar el componente. La función de limpieza lo detiene al desmontarlo.</p>
+      </section>
+      <section id="context">
+        <h2><span class="number">10</span>useContext</h2>
+        <p>Context permite compartir un valor con componentes descendientes sin pasar props manualmente por cada nivel. La lectura acompaña este tema con un botón que alterna el tema; el ejemplo está reconstruido con Context y estado para expresar ambas ideas correctamente.</p>
+        <pre><code>import { createContext, useContext, useState } from "react";
+
+const TemaContexto = createContext(null);
+
+function BotonTema() {
+  const { tema, cambiarTema } = useContext(TemaContexto);
+  const color = tema === "verde" ? "#4CAF50" : "#F44336";
+
+  return (
+    &lt;button onClick={cambiarTema} style={{ backgroundColor: color }}&gt;
+      Bot&oacute;n
+    &lt;/button&gt;
+  );
+}
+
+function App() {
+  const [tema, setTema] = useState("verde");
+  const cambiarTema = () =&gt; {
+    setTema(actual =&gt; actual === "verde" ? "rojo" : "verde");
+  };
+
+  return (
+    &lt;TemaContexto.Provider value={{ tema, cambiarTema }}&gt;
+      &lt;BotonTema /&gt;
+    &lt;/TemaContexto.Provider&gt;
+  );
+}</code></pre>
+        <p class="note">Este ejemplo muestra el patrón válido con <code>createContext</code>, <code>Provider</code> y <code>useContext</code>.</p>
+      </section>
+      <section id="reducer">
+        <h2><span class="number">11</span>useReducer</h2>
+        <p><code>useReducer</code> organiza actualizaciones de estado mediante acciones y una función reducer.</p>
+        <pre><code>import { useReducer } from "react";
+
+const estadoInicial = { contador: 0 };
+
+function reducer(estado, accion) {
+  switch (accion.type) {
+    case "INCREMENTAR":
+      return { contador: estado.contador + 1 };
+    case "DECREMENTAR":
+      return { contador: estado.contador - 1 };
+    default:
+      return estado;
+  }
+}
+
+function Contador() {
+  const [estado, dispatch] = useReducer(reducer, estadoInicial);
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;Contador: {estado.contador}&lt;/h2&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "INCREMENTAR" })}&gt;
+        Incrementar
+      &lt;/button&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "DECREMENTAR" })}&gt;
+        Decrementar
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </section>
+      <section id="other-hooks">
+        <h2><span class="number">12</span>Otros hooks</h2>
+        <div class="table-wrap">
+          <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Hook</th><th scope="col">Uso</th></tr></thead>
+            <tbody>
+              <tr><td><code>useRef</code></td><td>Conservar una referencia entre renders o acceder a un elemento DOM.</td></tr>
+              <tr><td><code>useMemo</code></td><td>Memorizar un valor calculado cuando hay una razón para evitar recalcularlo.</td></tr>
+              <tr><td><code>useCallback</code></td><td>Memorizar una función, por ejemplo cuando se pasa como prop a un componente memoizado.</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <p class="note">Se menciona estos hooks sin incluir bloques de código completos para ellos.</p>
+      </section>
+      <section id="lifecycle">
+        <h2><span class="number">13</span>Ciclo de vida</h2>
+        <p>Los componentes de clase ofrecen métodos asociados a montaje, actualización y desmontaje. En componentes funcionales, los efectos con <code>useEffect</code> suelen cubrir suscripciones y limpieza.</p>
+        <pre><code>class Reloj extends Component {
+  componentDidMount() {
+    // El componente se mont&oacute;.
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // El componente se actualiz&oacute;.
+  }
+
+  componentWillUnmount() {
+    // Limpiar timers o suscripciones.
+  }
+
+  render() {
+    return &lt;p&gt;Reloj&lt;/p&gt;;
+  }
+}</code></pre>
+        <p class="note">La lectura enumera tambi&eacute;n <code>getDerivedStateFromProps</code>, <code>getSnapshotBeforeUpdate</code> y <code>shouldComponentUpdate</code>; se omiten sus implementaciones porque no presenta un ejemplo completo de ellas.</p>
+      </section>
+      <section id="ecomarket">
+        <h2><span class="number">14</span>Temporizador EcoMarket</h2>
+        <p>Ejemplo reconstruido a partir de la consigna: contar desde 0 hasta 10, escribir cada nuevo valor en la consola y permitir detener el contador antes de terminar.</p>
+        <pre><code>import { useEffect, useState } from "react";
+
+function TemporizadorEcoMarket() {
+  const [segundos, setSegundos] = useState(0);
+  const [activo, setActivo] = useState(true);
+
+  useEffect(() =&gt; {
+    if (!activo || segundos &gt;= 10) return;
+
+    const temporizador = setTimeout(() =&gt; {
+      const siguiente = segundos + 1;
+      setSegundos(siguiente);
+      console.log("Contador:", siguiente);
+
+      if (siguiente === 10) {
+        setActivo(false);
+      }
+    }, 1000);
+
+    return () =&gt; clearTimeout(temporizador);
+  }, [activo, segundos]);
+
+  function detener() {
+    setActivo(false);
+  }
+
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;Ciclo de vida con contadores&lt;/h2&gt;
+      &lt;p&gt;Contador: {segundos}&lt;/p&gt;
+      &lt;button onClick={detener} disabled={!activo}&gt;
+        Detener contador
+      &lt;/button&gt;
+      {!activo &amp;&amp; &lt;p&gt;Temporizador finalizado.&lt;/p&gt;}
+    &lt;/section&gt;
+  );
+}
+
+export default TemporizadorEcoMarket;</code></pre>
+        <p class="note">Se usa <code>setTimeout</code> por tick y se cancela en la limpieza del efecto. As&iacute;, detener el contador o desmontar el componente evita que queden temporizadores activos.</p>
+        <a href="#inicio">Volver al inicio</a>
+      </section>
+    </main>
+  </div>
+  <footer>
+    <a href="index_m3l2.html">Lectura 2</a>
+    &middot;
+    <a href="index_m3l3.html">Lectura 3</a>
+    &middot;
+    <a href="index_m3l4.html">Lectura 4</a>
+  </footer>
+</body>
+</html>

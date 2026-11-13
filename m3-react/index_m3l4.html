@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Props, estado y patrones en React</title>
+  <style>
+    :root { color-scheme: light; --ink: #202a29; --muted: #586663; --accent: #076c56; --line: #d5dfdc; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body { margin: 0; color: var(--ink); background: #f4f7f6; font-family: "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid #b85b15; outline-offset: 4px; }
+    .skip { position: absolute; left: 16px; top: -80px; padding: 10px; background: white; }
+    .skip:focus { top: 12px; }
+    .page-header { padding: 36px max(24px, calc((100% - 1200px) / 2)); border-bottom: 1px solid var(--line); background: repeating-linear-gradient(90deg, transparent, transparent 79px, #076c5606 80px), #fff; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    h1 { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-weight: 400; margin: 10px 0; }
+    .page-header p:last-child { margin-bottom: 0; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 44px; max-width: 1200px; margin: auto; padding: 32px 24px 64px; }
+    .index { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+    .index h2 { font-size: 16px; margin-top: 0; }
+    .index ol { padding-left: 24px; margin: 0 0 18px; }
+    .index li { padding: 4px 0; font-size: 14px; }
+    .index ol a { color: var(--ink); }
+    main { min-width: 0; }
+    main > section { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 23px; line-height: 1.3; margin: 0 0 14px; }
+    h3 { font-size: 15px; margin: 20px 0 8px; overflow-wrap: anywhere; }
+    p { margin: 8px 0 16px; }
+    .number { color: var(--accent); font-family: Consolas, monospace; font-size: 15px; margin-right: 10px; }
+    pre { margin: 0; padding: 20px; overflow: auto; border-left: 3px solid var(--accent); background: #eaf0ed; color: #223b32; font-size: 13px; line-height: 1.65; tab-size: 2; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    p code, li code { background: #eaf0ed; padding: 2px 4px; overflow-wrap: anywhere; }
+    .note { font-size: 14px; color: var(--muted); }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; font-size: 14px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; color: var(--muted); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; font-size: 14px; color: var(--muted); }
+    @media (max-width: 760px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 16px; } .index { position: static; max-height: none; } .page-header { padding: 28px 16px; } h1 { font-size: 30px; } pre { padding: 14px; white-space: pre-wrap; overflow-wrap: anywhere; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { .layout { display: block; } .index { position: static; max-height: none; } pre { white-space: pre-wrap; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="page-header" id="inicio">
+    <p class="eyebrow">Taller de construcci&oacute;n de software</p>
+    <h1>Props, estado y patrones en React</h1>
+    <p>Lectura 4 &middot; Validaci&oacute;n, integraciones y flujo de datos</p>
+  </header>
+  <div class="layout">
+    <nav class="index" aria-label="&Iacute;ndice de la lectura">
+      <h2>&Iacute;ndice</h2>
+      <ol>
+        <li><a href="#props">Validaci&oacute;n de propiedades</a></li>
+        <li><a href="#refs">Referencias al DOM</a></li>
+        <li><a href="#state">Manejo del estado</a></li>
+        <li><a href="#rating">Calificaci&oacute;n con estrellas</a></li>
+        <li><a href="#state-tree">Estado en el &aacute;rbol</a></li>
+        <li><a href="#libraries">Integrar bibliotecas JavaScript</a></li>
+        <li><a href="#components">Tipos de componentes</a></li>
+        <li><a href="#flux">Patr&oacute;n Flux y Carrito de compras</a></li>
+        <li><a href="#review">Repaso</a></li>
+      </ol>
+      <p>
+        <a href="index_m3l1.html">Lectura 1</a>
+        &middot;
+        <a href="index_m3l2.html">Lectura 2</a>
+        &middot;
+        <a href="index_m3l3.html">Lectura 3</a>
+      </p>
+    </nav>
+    <main id="contenido">
+      <section id="props">
+        <h2><span class="number">01</span>Validaci&oacute;n de propiedades</h2>
+        <p>Las props transmiten datos del componente padre al hijo. El componente receptor debe tratarlas como entradas de solo lectura. La validaci&oacute;n ayuda a detectar durante el desarrollo si los valores recibidos tienen los tipos esperados.</p>
+        <p>Con <code>PropTypes</code> se pueden declarar tipos y marcar propiedades obligatorias con <code>isRequired</code>. Una discrepancia genera una advertencia de desarrollo para facilitar el diagn&oacute;stico.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Validador</th><th scope="col">Tipo de valor esperado</th></tr></thead>
+            <tbody>
+              <tr><td><code>PropTypes.string</code></td><td>Texto</td></tr>
+              <tr><td><code>PropTypes.number</code></td><td>N&uacute;mero</td></tr>
+              <tr><td><code>PropTypes.bool</code></td><td>Valor booleano</td></tr>
+              <tr><td><code>PropTypes.array</code></td><td>Arreglo</td></tr>
+              <tr><td><code>PropTypes.object</code></td><td>Objeto</td></tr>
+              <tr><td><code>PropTypes.func</code></td><td>Funci&oacute;n</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Declarar tipos y valores predeterminados</h3>
+        <pre><code>import PropTypes from "prop-types";
+
+function Producto({ nombre, precio, caracteristicas = [] }) {
+  return (
+    &lt;article&gt;
+      &lt;h2&gt;{nombre}&lt;/h2&gt;
+      &lt;p&gt;Precio: ${precio}&lt;/p&gt;
+      &lt;ul&gt;
+        {caracteristicas.map((item, indice) =&gt; (
+          &lt;li key={indice}&gt;{item}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/article&gt;
+  );
+}
+
+Producto.propTypes = {
+  nombre: PropTypes.string.isRequired,
+  precio: PropTypes.number.isRequired,
+  caracteristicas: PropTypes.array
+};</code></pre>
+        <p class="note">Un valor predeterminado apropiado, como un arreglo vac&iacute;o, permite recorrer la propiedad sin que falle cuando no se proporciona. Los tipos declarados ayudan a detectar errores, pero no sustituyen la validaci&oacute;n de datos necesaria en tiempo de ejecuci&oacute;n.</p>
+      </section>
+      <section id="refs">
+        <h2><span class="number">02</span>Referencias al DOM</h2>
+        <p>Las refs permiten acceder a un nodo del DOM o a una instancia concreta cuando se necesita interactuar directamente con ella. Por ejemplo, pueden servir para enfocar un campo o leer su valor al enviar un formulario.</p>
+        <pre><code>import { useRef } from "react";
+
+function FormularioProducto({ onAgregar }) {
+  const nombreRef = useRef(null);
+
+  function enviar(evento) {
+    evento.preventDefault();
+    onAgregar(nombreRef.current.value);
+  }
+
+  return (
+    &lt;form onSubmit={enviar}&gt;
+      &lt;input ref={nombreRef} aria-label="Nombre del producto" /&gt;
+      &lt;button type="submit"&gt;Agregar&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+        <p class="note">Usa refs para interacciones imperativas puntuales con el DOM. Para datos que controlan lo que se muestra, suele ser preferible el estado de React.</p>
+      </section>
+      <section id="state">
+        <h2><span class="number">03</span>Manejo del estado</h2>
+        <p>El estado representa datos que pueden cambiar durante el uso de la aplicaci&oacute;n y afectar la interfaz. Al actualizarlo con el setter de <code>useState</code>, React vuelve a renderizar los componentes que dependen de ese valor.</p>
+        <h3>Lista de favoritos</h3>
+        <pre><code>import { useState } from "react";
+
+function ListaDeFavoritos() {
+  const [favoritos, setFavoritos] = useState([]);
+
+  function agregarProducto(producto) {
+    setFavoritos(actuales =&gt; [...actuales, producto]);
+  }
+
+  return (
+    &lt;section&gt;
+      &lt;button onClick={() =&gt; agregarProducto("Bolsa reutilizable")}&gt;
+        Agregar a favoritos
+      &lt;/button&gt;
+      &lt;ul&gt;
+        {favoritos.map((producto, indice) =&gt; (
+          &lt;li key={`${producto}-${indice}`}&gt;{producto}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/section&gt;
+  );
+}</code></pre>
+        <p class="note">El arreglo se actualiza creando uno nuevo, en lugar de modificar el existente. El setter funcional usa el valor m&aacute;s reciente del estado.</p>
+      </section>
+      <section id="rating">
+        <h2><span class="number">04</span>Calificaci&oacute;n con estrellas</h2>
+        <p>Una calificaci&oacute;n separa la presentaci&oacute;n de una estrella individual de la l&oacute;gica que mantiene el puntaje. El componente contenedor administra el estado y comunica la selecci&oacute;n mediante una funci&oacute;n.</p>
+        <pre><code>import { useState } from "react";
+
+function Estrella({ seleccionada, onSeleccionar }) {
+  return (
+    &lt;button
+      type="button"
+      aria-label={seleccionada ? "Quitar estrella" : "Seleccionar estrella"}
+      onClick={onSeleccionar}
+    &gt;
+      {seleccionada ? "★" : "☆"}
+    &lt;/button&gt;
+  );
+}
+
+function CalificacionEstrellas({ total = 5, inicial = 0 }) {
+  const [calificacion, setCalificacion] = useState(inicial);
+
+  return (
+    &lt;div aria-label={`Calificación: ${calificacion} de ${total}`}&gt;
+      {Array.from({ length: total }, (_, indice) =&gt; (
+        &lt;Estrella
+          key={indice}
+          seleccionada={indice &lt; calificacion}
+          onSeleccionar={() =&gt; setCalificacion(indice + 1)}
+        /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+        <p class="note">Al seleccionar una estrella, el evento actualiza el estado del componente contenedor y la interfaz refleja la nueva calificaci&oacute;n.</p>
+      </section>
+      <section id="state-tree">
+        <h2><span class="number">05</span>Estado dentro del &aacute;rbol de componentes</h2>
+        <p>Ubica el estado en el componente m&aacute;s cercano que lo necesite. Cuando varios componentes hermanos comparten los mismos datos, conviene elevar el estado a un ancestro com&uacute;n y pasar los datos y las funciones de actualizaci&oacute;n mediante props.</p>
+        <pre><code>function App() {
+  const [favoritos, setFavoritos] = useState([]);
+
+  function agregarAFavoritos(producto) {
+    setFavoritos(actuales =&gt; [...actuales, producto]);
+  }
+
+  return (
+    &lt;&gt;
+      &lt;ListaDeProductos onAgregarFavorito={agregarAFavoritos} /&gt;
+      &lt;ListaDeFavoritos productos={favoritos} /&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+        <p>Este enfoque mantiene una fuente de verdad para los datos compartidos: el padre conserva el estado, los hijos reciben los valores y notifican las acciones a trav&eacute;s de callbacks.</p>
+      </section>
+      <section id="libraries">
+        <h2><span class="number">06</span>Integrar bibliotecas JavaScript</h2>
+        <p>React puede combinarse con bibliotecas especializadas. D3, por ejemplo, permite construir visualizaciones basadas en datos, como una l&iacute;nea de tiempo de eventos donde la posici&oacute;n horizontal representa el tiempo transcurrido.</p>
+        <p>Al integrar una biblioteca que manipula el DOM, define con claridad qu&eacute; parte administra React y cu&aacute;l administra la biblioteca. Un elemento contenedor con una ref puede servir como punto de conexi&oacute;n; los efectos permiten sincronizar la integraci&oacute;n con el ciclo de vida del componente.</p>
+        <pre><code>import { useEffect, useRef } from "react";
+
+function LineaDeTiempo({ eventos, dibujar }) {
+  const contenedorRef = useRef(null);
+
+  useEffect(() =&gt; {
+    dibujar(contenedorRef.current, eventos);
+  }, [dibujar, eventos]);
+
+  return &lt;div ref={contenedorRef} aria-label="Línea de tiempo" /&gt;;
+}</code></pre>
+        <h3>Componentes de orden superior</h3>
+        <p>Un componente de orden superior (HOC) es una funci&oacute;n que recibe un componente y devuelve otro componente. Puede reutilizar comportamiento, envolver el componente original y entregarle datos o funciones adicionales mediante props.</p>
+        <pre><code>function conProductos(Componente, obtenerProductos) {
+  return function ComponenteConProductos(props) {
+    const productos = obtenerProductos();
+    return &lt;Componente {...props} productos={productos} /&gt;;
+  };
+}</code></pre>
+      </section>
+      <section id="components">
+        <h2><span class="number">07</span>Componentes funcionales y de clase</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Tipo</th><th scope="col">Caracter&iacute;sticas</th></tr></thead>
+            <tbody>
+              <tr><td>Funcional</td><td>Funci&oacute;n que recibe props y devuelve JSX. Puede usar hooks para estado y efectos.</td></tr>
+              <tr><td>De clase</td><td>Extiende <code>React.Component</code>, puede mantener estado y m&eacute;todos de ciclo de vida, y define <code>render()</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre><code>function Saludo({ nombre }) {
+  return &lt;h2&gt;Hola, {nombre}!&lt;/h2&gt;;
+}
+
+class SaludoDeClase extends React.Component {
+  render() {
+    return &lt;h2&gt;Hola, {this.props.nombre}!&lt;/h2&gt;;
+  }
+}</code></pre>
+        <p class="note">Los componentes funcionales son el enfoque habitual en React moderno. Los componentes de clase siguen siendo relevantes al leer o mantener c&oacute;digo existente.</p>
+      </section>
+      <section id="flux">
+        <h2><span class="number">08</span>Patr&oacute;n Flux y flujo de datos</h2>
+        <p>Flux organiza el flujo de datos en una sola direcci&oacute;n y ayuda a mantener claro d&oacute;nde se actualiza el estado de una aplicaci&oacute;n.</p>
+        <ol>
+          <li><strong>Acci&oacute;n:</strong> describe un evento o una intenci&oacute;n, como agregar un producto.</li>
+          <li><strong>Dispatcher:</strong> distribuye la acci&oacute;n a los manejadores correspondientes.</li>
+          <li><strong>Store:</strong> conserva los datos y la l&oacute;gica de actualizaci&oacute;n.</li>
+          <li><strong>Vista:</strong> los componentes React muestran los datos y generan nuevas acciones ante interacciones.</li>
+        </ol>
+        <pre><code>// Acci&oacute;n que representa una interacci&oacute;n del usuario
+const accion = {
+  type: "producto/agregado",
+  payload: { id: 1, nombre: "Bolsa reutilizable" }
+};</code></pre>
+        <p>En el ejemplo EcoMarket, una store mantiene los productos y notifica los cambios; un hook puede suscribirse a esa store, y la vista obtiene los productos para representarlos. La lectura tambi&eacute;n relaciona esta organizaci&oacute;n unidireccional con Redux.</p>
+      </section>
+      <section id="review">
+        <h2><span class="number">09</span>Repaso</h2>
+        <ul>
+          <li>Las props son entradas de solo lectura; valida los tipos esperados y proporciona valores predeterminados seguros cuando corresponda.</li>
+          <li>Las refs resuelven necesidades puntuales de acceso imperativo al DOM; el estado debe controlar los datos que afectan el renderizado.</li>
+          <li>Actualiza el estado de forma inmutable y eleva al padre los datos compartidos por varios componentes.</li>
+          <li>Integra bibliotecas externas delimitando la responsabilidad sobre el DOM y sincronizando su trabajo con los efectos de React.</li>
+          <li>Flux representa un flujo unidireccional de acciones a dispatcher, store y vista.</li>
+        </ul>
+        <p class="note">En s&iacute;ntesis: para compartir estado, el padre lo conserva y lo distribuye como props; Flux organiza ese flujo a escala de la aplicaci&oacute;n.</p>
+      </section>
+    </main>
+  </div>
+  <footer>
+    <a href="index_m3l1.html">Lectura 1</a>
+    &middot;
+    <a href="index_m3l2.html">Lectura 2</a>
+    &middot;
+    <a href="index_m3l3.html">Lectura 3</a>
+  </footer>
+</body>
+</html>

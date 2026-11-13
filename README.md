@@ -4,6 +4,7 @@
 
 1. [Módulo 1: HTML, CSS y JavaScript](#resumen-del-módulo-1-html-css-y-javascript)
 2. [Módulo 2: Java, Spring Boot y Persistencia](#resumen-del-módulo-2-java-spring-boot-y-persistencia)
+3. [Módulo 3: React y JSX](#resumen-del-módulo-3-react-y-jsx)
 
 ---
 
@@ -13,7 +14,7 @@ El módulo 1, ubicado en [m1-html-css-javascript](m1-html-css-javascript/), intr
 
 Sus cuatro lecturas avanzan desde la estructura de un documento HTML y el diseño responsivo hasta los fundamentos de programación, la manipulación del DOM y el manejo de eventos. El caso **Empresa Ficticia** permite observar la aplicación de estos conceptos en ejemplos de un sitio web.
 
-Este repositorio está orientado a la enseñanza de Construcción de Software en un nivel básico. Este README documenta los módulos 1 y 2.
+Este repositorio está orientado a la enseñanza de Construcción de Software en un nivel básico. Este README documenta los módulos 1, 2 y 3.
 
 ---
 
@@ -23,6 +24,7 @@ Este repositorio está orientado a la enseñanza de Construcción de Software en
 |---------|-------|---------|
 | 1.0 | 2026-10-10 | Documentación inicial del módulo 1: resumen, objetivos, contenidos, ruta de aprendizaje y guía de uso. |
 | 1.1 | 2026-10-11 | Documentación del módulo 2: Java, Spring Boot, persistencia JPA, SQL y guía de implementación del MVP. |
+| 1.2 | 2026-11-13 | Documentación del módulo 3: React, JSX, componentes, estado y hooks. |
 
 ---
 
@@ -153,6 +155,12 @@ m2-java-springboot-persistencia/
     index_m2l2.html
     index_m2l3.html
     index_m2l4.html
+    images/
+m3-react/
+    index_m3l1.html
+    index_m3l2.html
+    index_m3l3.html
+    index_m3l4.html
     images/
 README.md
 ```
@@ -324,3 +332,96 @@ En el MVP, configurar la conexión en `application.properties` y las variables d
 - [ ] Consultar y guardar datos mediante un repositorio Spring Data JPA.
 - [ ] Configurar MySQL sin incluir credenciales en el código fuente.
 - [ ] Ejecutar el MVP y verificar que los productos persistan tras reiniciar la aplicación.
+
+---
+
+## Resumen del Módulo 3: React y JSX
+
+El módulo 3, ubicado en [m3-react](m3-react/), introduce **React** para construir interfaces mediante componentes reutilizables. Recorre JSX, props, estado y hooks, y muestra cómo se actualiza la interfaz en respuesta a cambios de datos e interacciones. Los ejemplos aplican estos conceptos a componentes y aplicaciones como **Carrito de compras**.
+
+### Objetivos Educativos
+
+- Comprender la arquitectura de componentes de React y su relación con JSX y el DOM.
+- Distinguir props de estado y reconocer cómo fluye la información entre componentes.
+- Crear componentes funcionales y manejar eventos e interacciones.
+- Utilizar hooks como `useState`, `useEffect`, `useContext` y `useReducer`.
+- Comprender reducers, el patrón Flux y los principios de Redux.
+- Validar propiedades con PropTypes y utilizar referencias (`refs`) cuando corresponda.
+- Integrar estilos y bibliotecas de JavaScript en una interfaz React.
+- Crear, ejecutar y explorar la estructura de un proyecto React.
+
+### Estructura del Módulo
+
+El módulo contiene cuatro lecturas en formato HTML:
+
+#### Lectura 1 - React y sus fundamentos
+
+**Página:** [index_m3l1.html](m3-react/index_m3l1.html)
+
+- React, aplicaciones de una sola página, componentes y convenciones de nombres.
+- DOM virtual, JSX y componentes funcionales y de clase.
+- Props, estado, renderizado condicional y hooks.
+- Ciclo de vida y ejemplo de temporizador para Carrito de compras.
+
+#### Lectura 2 - Flujo de datos y funciones React
+
+**Página:** [index_m3l2.html](m3-react/index_m3l2.html)
+
+- Flujo de datos unidireccional, props y estado.
+- Componentes, arquitectura Redux, reducers y `useReducer`.
+- Funciones de componentes, manejadores de eventos y funciones de utilidad.
+- Creación y ejecución de proyectos; ejemplo de cambio de color de fondo.
+
+#### Lectura 3 - JSX y componentes
+
+**Página:** [index_m3l3.html](m3-react/index_m3l3.html)
+
+- Creación de elementos React y comparación con JSX.
+- Componentes anidados, expresiones de JavaScript y listas.
+- Estilos en línea, objetos de estilos y archivos CSS.
+- Aplicación de JSX al ejemplo Carrito de compras.
+
+#### Lectura 4 - Propiedades, estado e integración
+
+**Página:** [index_m3l4.html](m3-react/index_m3l4.html)
+
+- Validación de propiedades con PropTypes y referencias (`refs`).
+- Manejo y organización del estado en el árbol de componentes.
+- Integración de bibliotecas como D3 y componentes de orden superior.
+- Patrón Flux y flujo de datos en una aplicación.
+
+### Ruta de Aprendizaje Recomendada
+
+1. **Fundamentos:** estudiar la lectura 1 y reconocer los componentes, props, estado y hooks.
+2. **Flujo de datos:** continuar con la lectura 2 y seguir el recorrido de eventos, acciones, reducers y estado.
+3. **Construcción de interfaces:** practicar JSX, componentes, expresiones y estilos con la lectura 3.
+4. **Integración:** finalizar con la lectura 4 y relacionar validación, estado y bibliotecas externas.
+
+### Cómo Usar Este Módulo
+
+Abrir [la lectura 1](m3-react/index_m3l1.html) en un navegador moderno y utilizar el índice y los enlaces de navegación para recorrer las cuatro páginas. Para ejecutar los ejemplos de aplicación, se requiere Node.js y npm. La lectura 2 conserva el comando de Create React App del material y presenta Vite como alternativa para iniciar un proyecto nuevo.
+
+### Estadísticas del Módulo
+
+| Métrica | Cantidad o Alcance |
+|---------|--------------------|
+| Lecturas HTML | 4 |
+| Tecnologías y conceptos principales | React, JSX, JavaScript, hooks, Redux y Flux |
+| Ejemplos de aplicación | Carrito de compras y componentes interactivos |
+| Nivel | Básico |
+
+### Notas Importantes
+
+- Los fragmentos son didácticos y pueden requerir el contexto o dependencias indicadas en cada lectura para ejecutarse.
+- La arquitectura Redux y los reducers se presentan como conceptos; no todos los ejemplos forman una aplicación Redux completa.
+- Create React App se conserva como referencia del material; para proyectos nuevos, la lectura muestra Vite como alternativa.
+
+### Checklist de Estudiante
+
+- [ ] Explicar cómo se organiza una interfaz en componentes React.
+- [ ] Describir la diferencia entre props y estado.
+- [ ] Escribir JSX con componentes anidados y expresiones de JavaScript.
+- [ ] Actualizar el estado con hooks y responder a eventos.
+- [ ] Explicar el propósito de reducers, Redux y el patrón Flux.
+- [ ] Validar propiedades y reconocer cuándo utilizar refs.
+- [ ] Ejecutar un proyecto React y ubicar sus archivos principales.
